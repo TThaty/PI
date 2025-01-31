@@ -509,3 +509,9 @@ button:disabled {
 .usuario-detalles .baja, .maquina-detalles .baja, #botonBaja {
     background: linear-gradient(135deg, #ff4343, #a70000);
 }
+
+.alinear-boton-averia {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}

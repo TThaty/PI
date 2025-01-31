@@ -117,7 +117,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     verificarSesion();
     mostrarMenu();
-    cargarUsuarios();
+    cargarUsuariosGestionUsuarios();
+    cargarUsuariosGestionSeguridad();
     mostrarUsuarioActual();
 });
 
@@ -191,8 +192,6 @@ function renderizarUsuarios() {
                 <button class="btn btn-primary" onclick="abrirFormularioRol('${usuario.nombre}')">Asignar Rol</button>
                 <button class="btn btn-primary" onclick="abrirFormularioMaquinas('${usuario.nombre}')">Asignar Máquina</button>
                 <button class="btn btn-primary" onclick="abrirFormularioVacaciones('${usuario.nombre}')">Establecer Vacaciones</button>
-                <button class="btn btn-primary" onclick="abrirFormularioContrasena('${usuario.nombre}')">Cambiar Contraseña</button>
-                <button class="btn btn-primary" onclick="forzarCambioContrasena('${usuario.nombre}')">Obligar Cambio de Contraseña</button>
                 <button id="botonBaja" class="btn btn-danger" onclick="darBajaUsuario('${usuario.nombre}')">
                     Dar de Baja
                 </button>
@@ -215,7 +214,7 @@ function abrirModal(titulo, contenidoHTML) {
     modalInstance.show();
 }
 
-function filtrarUsuarios() {
+function filtrarUsuariosGestionUsuarios() {
     const filtro = document.getElementById("buscadorUsuarios").value.toLowerCase();
     const lista = document.getElementById("listaUsuarios").children;
     for (const usuario of lista) {
@@ -224,10 +223,72 @@ function filtrarUsuarios() {
     }
 }
 
+function filtrarUsuariosGestionSeguridad() {
+    let filtro = document.getElementById("buscadorUsuarios").value.toLowerCase();
+    let select = document.getElementById("seleccionarUsuario");
+    let lista = document.getElementById("listaUsuariosFiltrados");
+
+    select.innerHTML = '<option value="">Selecciona un usuario...</option>';
+    lista.innerHTML = "";
+
+    let coincidencias = usuarios.filter(usuario => usuario.toLowerCase().includes(filtro));
+
+    // Si hay coincidencias, muestra la lista
+    if (coincidencias.length > 0) {
+        lista.classList.remove("d-none");
+    } else {
+        lista.classList.add("d-none");
+    }
+
+    coincidencias.forEach(usuario => {
+        // Agregar al <select>
+        let option = document.createElement("option");
+        option.value = usuario;
+        option.textContent = usuario;
+        select.appendChild(option);
+
+        // Agregar a la lista filtrada
+        let li = document.createElement("li");
+        li.textContent = usuario;
+        li.classList.add("list-group-item", "list-group-item-action");
+        li.onclick = function() {
+            document.getElementById("buscadorUsuarios").value = usuario;
+            select.value = usuario;
+            actualizarUsuarioSeleccionado();
+            lista.classList.add("d-none"); // Ocultar la lista después de seleccionar
+        };
+        lista.appendChild(li);
+    });
+}
+
+
 function toggleUsuario(id) {
     const detalles = document.getElementById(`detalles-${id}`);
     detalles.classList.toggle("activo");
 }
+
+function abrirFormularioMaquinas(usuario) {
+    const contenido = `
+        <h5>Asignar Máquina a ${usuario}</h5>
+        <form id="formMaquina">
+            <div class="mb-3">
+                <label for="maquina" class="form-label">Máquina:</label>
+                <input type="text" id="maquina" class="form-control" placeholder="ID o Nombre de la Máquina">
+            </div>
+            <div class="mb-3">
+                <label for="permiso" class="form-label">Permiso:</label>
+                <select id="permiso" class="form-select">
+                    <option value="Lectura">Lectura</option>
+                    <option value="Escritura">Escritura</option>
+                    <option value="Administrador">Administrador</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="asignarMaquina('${usuario}')">Guardar</button>
+        </form>
+    `;
+    abrirModal("Asignar Máquina", contenido);
+}
+
 
 function abrirFormularioRol(usuario) {
     const contenido = `
@@ -326,24 +387,6 @@ function abrirFormularioVacaciones(usuario) {
     abrirModal("Establecer Vacaciones", contenido);
 }
 
-function forzarCambioContrasena(usuarioNombre) {
-    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-    let usuarioIndex = usuarios.findIndex(u => u.nombre === usuarioNombre);
-
-    if (usuarioIndex !== -1) {
-        if (confirm(`¿Quieres obligar a ${usuarioNombre} a cambiar su contraseña en su próximo inicio de sesión?`)) {
-            usuarios[usuarioIndex].cambioContrasenaRequerido = true;
-
-            // Guardar cambios en localStorage
-            localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
-            mostrarAlerta(`Se ha obligado a ${usuarioNombre} a cambiar su contraseña.`, "warning");
-        }
-    } else {
-        mostrarAlerta(`Error: No se encontró el usuario ${usuarioNombre}.`, "danger");
-    }
-}
-
 
 function darBajaUsuario(usuarioNombre) {
     let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
@@ -359,24 +402,6 @@ function darBajaUsuario(usuarioNombre) {
 
         mostrarAlerta(`El usuario "${usuarioNombre}" ha sido dado de baja correctamente.`, "danger");
     }
-}
-
-function abrirFormularioContrasena(usuario) {
-    const contenido = `
-        <h5>Cambiar Contraseña de ${usuario}</h5>
-        <form id="formContrasena">
-            <div class="mb-3">
-                <label for="nuevaContrasena" class="form-label">Nueva Contraseña:</label>
-                <input type="password" id="nuevaContrasena" class="form-control" placeholder="Nueva Contraseña">
-            </div>
-            <div class="mb-3">
-                <label for="confirmarContrasena" class="form-label">Confirmar Contraseña:</label>
-                <input type="password" id="confirmarContrasena" class="form-control" placeholder="Confirmar Contraseña">
-            </div>
-            <button type="button" class="btn btn-primary" onclick="cambiarContrasena('${usuario}')">Guardar</button>
-        </form>
-    `;
-    abrirModal("Cambiar Contraseña", contenido);
 }
 
 function cerrarModal() {
@@ -437,24 +462,79 @@ function establecerVacaciones(usuario) {
     cerrarModal();
 }
 
-function cambiarContrasena(usuario) {
-    const nueva = document.getElementById("nuevaContrasena").value;
-    const confirmar = document.getElementById("confirmarContrasena").value;
+function cambiarContrasenaModal() {
+    const nueva = document.getElementById("nuevaContrasenaModal").value.trim();
+    const confirmar = document.getElementById("confirmarContrasenaModal").value.trim();
+    // ... validaciones y lógica ...
+}
 
-    if (nueva === confirmar) {
-        let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+function cambiarContrasenaActual() {
+    const contrasenaActual = document.getElementById("contrasenaActual").value.trim();
+    const nueva = document.getElementById("nuevaContrasenaActual").value.trim();
+    const confirmar = document.getElementById("confirmarContrasenaActual").value.trim();
+    const alerta = document.getElementById("alertaContrasena");
 
-        let usuarioIndex = usuarios.findIndex(u => u.nombre === usuario);
-        if (usuarioIndex !== -1) {
-            usuarios[usuarioIndex].password = nueva;
-            localStorage.setItem("usuarios", JSON.stringify(usuarios));
-            mostrarAlerta(`Contraseña cambiada correctamente para ${usuario}.`, "success");
-        }
-    } else {
-        mostrarAlerta("Las contraseñas no coinciden. Por favor, inténtalo de nuevo.", "danger");
+    let usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let usuarioIndex = usuarios.findIndex(u => u.username === usuarioActual.username);
+
+    if (usuarioIndex === -1) {
+        mostrarAlerta("❌ Error: Usuario no encontrado.", "danger");
+        return;
     }
 
-    cerrarModal();
+    if (!contrasenaActual || !nueva || !confirmar) {
+        mostrarAlerta("⚠️ Todos los campos son obligatorios.", "warning");
+        return;
+    }
+
+    // Verifica si la contraseña actual es correcta
+    if (usuarios[usuarioIndex].password !== contrasenaActual) {
+        mostrarAlerta("❌ La contraseña actual es incorrecta.", "danger");
+        return;
+    }
+
+    // Validar requisitos de la nueva contraseña
+    if (nueva.length < 4 || !/(?=.*[A-Za-z])(?=.*\d)/.test(nueva)) {
+        mostrarAlerta("⚠️ La nueva contraseña debe tener al menos 4 caracteres, incluyendo una letra y un número.", "warning");
+        return;
+    }
+
+    if (nueva !== confirmar) {
+        mostrarAlerta("❌ Las contraseñas no coinciden.", "danger");
+        return;
+    }
+
+    // Guardar la nueva contraseña
+    usuarios[usuarioIndex].password = nueva;
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+    // Mostrar mensaje de éxito
+    mostrarAlerta("✅ Contraseña cambiada correctamente.", "success");
+
+    // Limpiar los campos después de un cambio exitoso
+    document.getElementById("contrasenaActual").value = "";
+    document.getElementById("nuevaContrasenaActual").value = "";
+    document.getElementById("confirmarContrasenaActual").value = "";
+}
+
+function mostrarAlertaModal(mensaje, tipo) {
+    const alerta = document.getElementById("alertaContrasena");
+    document.getElementById("formCambioContrasena").after(alerta);
+    
+    alerta.textContent = mensaje;
+    alerta.className = `alert alert-${tipo} mt-3`;
+    alerta.classList.remove("d-none");
+
+    setTimeout(() => {
+        alerta.classList.add("d-none");
+    }, 3000);
+}
+
+function ocultarAlertaModal() {
+    const alerta = document.getElementById("alertaContrasenaModal");
+    alerta.innerHTML = "";
+    alerta.classList.add("d-none");
 }
 
 function abrirChat() {
@@ -936,7 +1016,7 @@ function mostrarUsuarioActual() {
     }
 }
 
-function cargarUsuarios() {
+function cargarUsuariosGestionUsuarios() {
     const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
     const select = document.getElementById("seleccionarUsuario");
 
@@ -948,6 +1028,30 @@ function cargarUsuarios() {
         select.appendChild(option);
     });
 }
+
+function cargarUsuariosGestionSeguridad() {
+    let select = $('#seleccionarUsuario');
+    select.empty().append('<option value="">Selecciona un usuario...</option>');
+
+    usuarios.forEach(usuario => {
+        select.append($('<option>', {
+            value: usuario.id,  // Usamos el ID como valor
+            text: usuario.nombre // Mostramos el nombre en la lista
+        }));
+    });
+
+    // Si hay un usuario preseleccionado, actualizar su nombre en los modales
+    actualizarUsuarioSeleccionado();
+}
+
+$(document).ready(function() {
+    $('#seleccionarUsuario').select2({
+        placeholder: "Escribe para buscar...",
+        allowClear: true
+    });
+
+    cargarUsuariosGestionSeguridad(); 
+});
 
 function cargarDatosUsuario() {
     const usuarioSeleccionado = document.getElementById("seleccionarUsuario").value;
@@ -1011,6 +1115,66 @@ function actualizarPermisos() {
     });
 }
 
+function actualizarUsuarioSeleccionado() {
+    let select = document.getElementById("seleccionarUsuario");
+    let usuarioSeleccionadoID = select.value; // Obtiene el ID del usuario seleccionado
+
+    // Busca el usuario en la lista basada en el ID
+    let usuario = usuarios.find(u => u.id == usuarioSeleccionadoID);
+
+    if (usuario) {
+        console.log("Usuario seleccionado:", usuario.nombre); // Depuración
+
+        // Asegurar que los elementos existen antes de actualizar
+        let usuarioCambio = document.getElementById("usuarioCambio");
+        let usuarioForzar = document.getElementById("usuarioForzarCambio");
+
+        if (usuarioCambio) {
+            usuarioCambio.textContent = usuario.nombre;
+        }
+        if (usuarioForzar) {
+            usuarioForzar.textContent = usuario.nombre;
+        }
+    } else {
+        console.warn("No se encontró el usuario seleccionado.");
+
+        let usuarioCambio = document.getElementById("usuarioCambio");
+        let usuarioForzar = document.getElementById("usuarioForzarCambio");
+
+        if (usuarioCambio) {
+            usuarioCambio.textContent = "Usuario no seleccionado";
+        }
+        if (usuarioForzar) {
+            usuarioForzar.textContent = "Usuario no seleccionado";
+        }
+    }
+}
+
+
+function guardarForzarCambio() {
+    let usuario = document.getElementById("seleccionarUsuario").value;
+    let forzar = document.getElementById("forzarCambioContrasena").checked;
+
+    if (!usuario) {
+        alert("Selecciona un usuario primero.");
+        return;
+    }
+
+    if (!forzar) {
+        alert("Debes seleccionar la casilla antes de confirmar.");
+        return;
+    }
+
+    alert(`El usuario "${usuario}" ahora está obligado a cambiar su contraseña en el próximo inicio.`);
+}
+
+function habilitarBotonConfirmar() {
+    let checkbox = document.getElementById("forzarCambioContrasena");
+    let boton = document.getElementById("btnConfirmarForzarCambio");
+    boton.disabled = !checkbox.checked;
+}
+
+document.getElementById("forzarCambioContrasena").addEventListener("change", habilitarBotonConfirmar);
 
 
 
