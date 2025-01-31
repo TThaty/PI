@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Gestión de Seguridad</title>
+    <link rel="stylesheet" href="estilos.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Gestión de Seguridad</h1>
+    </header>
+
+    <!--Mostrar Nav-->
+    <div id="menu-container"></div>
+
+    <main class="container mt-4">
+        <!-- Selección de usuario -->
+        <h2>Gestión de Seguridad para Usuarios</h2>
+        <div class="mb-3">
+            <label for="seleccionarUsuario" class="form-label">Seleccionar Usuario:</label>
+            <select id="seleccionarUsuario" class="form-select" onchange="cargarDatosUsuario()">
+                <!-- Los usuarios serán cargados dinámicamente -->
+            </select>
+        </div>
+
+        <form id="formGestionUsuario">
+            <h4>Modificar Seguridad del Usuario</h4>
+
+            <div class="mb-3">
+                <label for="nuevoRol" class="form-label">Seleccionar Rol:</label>
+                <select id="nuevoRol" class="form-select" onchange="actualizarPermisos()">
+                    <option value="mecanico">Mecánico</option>
+                    <option value="operario">Operario</option>
+                    <option value="administrador">Administrador</option>
+                </select>
+            </div>
+
+            <h5>Permisos:</h5>
+            <div id="permisos">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoAñadirMaquinas">
+                    <label class="form-check-label" for="permisoAñadirMaquinas">Añadir Máquinas</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoModificarMaquinas">
+                    <label class="form-check-label" for="permisoModificarMaquinas">Modificar Máquinas</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoBorrarMaquinas">
+                    <label class="form-check-label" for="permisoBorrarMaquinas">Borrar Máquinas</label>
+                </div>
+                
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoAñadirAverias">
+                    <label class="form-check-label" for="permisoAñadirAverias">Añadir Avería</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoModificarAverias">
+                    <label class="form-check-label" for="permisoModificarAverias">Modificar Avería</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoBorrarAverias">
+                    <label class="form-check-label" for="permisoBorrarAverias">Borrar Avería</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoMarcarAveriaResuelta">
+                    <label class="form-check-label" for="permisoMarcarAveriaResuelta">Marcar Resuelta la Avería</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoAñadirTareas">
+                    <label class="form-check-label" for="permisoAñadirTareas">Añadir Tareas</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoModificarTareas">
+                    <label class="form-check-label" for="permisoModificarTareas">Modificar Tareas</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoBorrarTareas">
+                    <label class="form-check-label" for="permisoBorrarTareas">Borrar Tareas</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoAñadirUsuarios">
+                    <label class="form-check-label" for="permisoAñadirUsuarios">Añadir Usuarios</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoModificarUsuarios">
+                    <label class="form-check-label" for="permisoModificarUsuarios">Modificar Usuarios</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="permisoBorrarUsuarios">
+                    <label class="form-check-label" for="permisoBorrarUsuarios">Borrar Usuarios</label>
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-primary mt-3" onclick="guardarSeguridadUsuario()">Guardar Configuración</button>
+
+            <!-- Cambio de contraseña del usuario actual -->
+        <h2>Cambio de Contraseña del Usuario Actual (<span id="nombreUsuarioActual"></span>)</h2>
+        <form id="formCambioContrasena">
+            <div class="mb-3">
+                <label for="contrasenaActual" class="form-label">Contraseña Actual:</label>
+                <input type="password" id="contrasenaActual" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="nuevaContrasena" class="form-label">Nueva Contraseña:</label>
+                <input type="password" id="nuevaContrasena" class="form-control" required>
+                <small class="text-muted">Mínimo 4 caracteres, al menos una letra y un número.</small>
+            </div>
+            <div class="mb-3">
+                <label for="confirmarContrasena" class="form-label">Confirmar Nueva Contraseña:</label>
+                <input type="password" id="confirmarContrasena" class="form-control" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="cambiarContrasena()">Guardar Contraseña</button>
+        </form>
+        <div id="alertaContrasena" class="alert alert-success mt-3 d-none"></div>
+        </form>
+        <div id="alertaRoles" class="alert alert-success mt-3 d-none"></div>
+    </main>
+
+    <!-- Botón de chat -->
+    <div id="chatBoton" onclick="abrirChat()">
+        💬 Chat
+    </div>
+    <div id="chatVentana" class="chat-ventana">
+        <div class="chat-header">
+            <span>Chat Simulado</span>
+            <span class="cerrar-chat" onclick="cerrarChat()">×</span>
+        </div>
+        <div class="chat-cuerpo">
+            <div class="mensaje">
+                <strong>Máquina1:</strong> Hola, ¿cómo estás?
+            </div>
+        </div>
+        <div class="chat-pie">
+            <input type="text" id="mensajeInput" placeholder="Escribe un mensaje...">
+            <button onclick="enviarMensaje()">Enviar</button>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

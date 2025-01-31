@@ -1,0 +1,368 @@
+/* Reset de estilos por defecto */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos generales */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* Encabezado */
+header {
+    text-align: center;
+    background-color: #007BFF;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+/* Barra de navegación */
+nav {
+    display: flex;
+    justify-content: center;
+    background-color: #333;
+    padding: 10px 0;
+    margin: 20px 0;
+    border-radius: 8px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 1.1rem;
+}
+
+nav a:hover, nav a.active {
+    background-color: #007BFF;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Estilos para el contenedor principal */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Título de la lista */
+h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilos de las averías */
+#listaAverias, #listaTareas {
+    list-style-type: none;
+}
+
+#listaAverias li, #listaTareas li {
+    background-color: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+/* Estilo para las averías corregidas */
+#listaAverias li.resolved {
+    background-color: #82ff9f; /* Verde para las averías corregidas */
+    color: black; /* Texto negro para mejor contraste */
+}
+
+/* Estilo para las tareas en curso */
+#listaTareas li.en-curso {
+    background-color: #7fbdff; /* Azul para tareas en curso */
+}
+
+/* Estilo para las tareas realizadas */
+#listaTareas li.realizada {
+    background-color: #82ff9f; /* Verde para tareas realizadas */
+}
+
+/* Estilo para las tareas pendientes */
+#listaTareas li.pendiente {
+    background-color: #f4f4f4; /* Gris para tareas pendientes */
+}
+
+#listaAverias li:hover, #listaTareas li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+#listaAverias li a, #listaTareas li a {
+    color: #000000;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#listaAverias li a:hover, #listaTareas li a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos de los detalles */
+.detalleAveria, #detalleTarea {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Estilos responsive */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+    }
+
+    nav a {
+        margin: 10px 0;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    #listaAverias li, #listaTareas li {
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+}
+
+#barraBusqueda {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#buscadorUsuarios {
+    padding: 10px;
+    font-size: 1rem;
+    width: 60%;
+}
+
+#listaUsuarios {
+    list-style: none;
+    padding: 0;
+}
+
+#listaUsuarios li {
+    margin-bottom: 15px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.usuario-header {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.usuario-detalles {
+    display: none;
+    margin-top: 10px;
+}
+
+.usuario-detalles button {
+    display: block;
+    margin: 5px 0;
+}
+
+.usuario-detalles .baja {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+#chatBoton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+#modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-contenido {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    width: 50%;
+    border-radius: 8px;
+}
+
+.cerrar {
+    float: right;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+#formRol, #formMaquina, #formVacaciones, #formContrasena {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#formRol label, 
+#formMaquina label, 
+#formVacaciones label, 
+#formContrasena label {
+    font-weight: bold;
+}
+
+#formRol input, 
+#formMaquina input, 
+#formVacaciones input, 
+#formContrasena input, 
+#formRol select, 
+#formMaquina select, 
+#formVacaciones select {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#formRol button, 
+#formMaquina button, 
+#formVacaciones button, 
+#formContrasena button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#formRol button:hover, 
+#formMaquina button:hover, 
+#formVacaciones button:hover, 
+#formContrasena button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos del chat */
+.chat-ventana {
+    display: none;
+    position: fixed;
+    bottom: 60px; /* Ajusta la distancia desde el fondo para que esté justo encima del botón */
+    left: 20px;
+    width: 300px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    z-index: 1000;
+    font-size: 0.9rem;
+}
+
+.chat-header {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.cerrar-chat {
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.chat-cuerpo {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.chat-cuerpo .mensaje {
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.chat-pie {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background-color: #f4f4f4;
+}
+
+.chat-pie input {
+    flex: 1;
+    padding: 8px;
+    font-size: 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+.chat-pie button {
+    background-color: #007BFF;
+    color: white;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.chat-pie button:hover {
+    background-color: #0056b3;
+}

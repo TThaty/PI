@@ -1,0 +1,182 @@
+header, body, footer{
+    margin: 20px 15px 20px 15px;
+}
+
+body {
+    overflow-x: hidden; /* Elimina el scroll horizontal */
+}
+
+header {
+    text-align: center;
+    background: linear-gradient(135deg, #007BFF, #0056b3); /* Degradado azul */
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+nav a:hover, nav a.active {
+    background: linear-gradient(135deg, #007BFF, #0056b3); /* Degradado azul */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+}
+
+.left-aside {
+    background: linear-gradient(135deg, #007BFF, #0056b3); /* Degradado azul */
+    color: #ffffff; /* Color del texto en blanco */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 100vh; /* Cubrir toda la altura */
+    padding: 20px;
+    margin-left: 15px;
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra alrededor */
+}
+
+.left-aside img {
+    max-width: 80%;
+    margin: 20px auto; /* Centrar la imagen */
+    display: block;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra para la imagen */
+}
+
+.left-aside p {
+    margin: 15px 0;
+    font-size: 1.1rem;
+    text-align: justify; /* Justificar texto */
+}
+
+.right-aside {
+    position: absolute; /* Posicionar el calendario de forma absoluta */
+    top: 0;
+    right: 15px; /* Separación del borde derecho */
+    width: 15%; /* Ancho del calendario */
+    height: 100%; /* Ajustar altura */
+    background-color: #ffffff; /* Fondo blanco para el calendario */
+    padding: 20px;
+    border-left: 1px solid #ddd; /* Línea divisoria */
+    display: flex;
+    flex-direction: column;
+}
+
+.right-aside {
+    position: absolute; /* Posicionar el calendario de forma absoluta */
+    top: 120px; /* Ajustar esta distancia según el tamaño del header/nav */
+    right: 15px; /* Separación del borde derecho */
+    width: 15%; /* Ancho del calendario */
+    background-color: #ffffff; /* Fondo blanco para el calendario */
+    padding: 20px;
+    border-left: 1px solid #ddd; /* Línea divisoria */
+    display: flex;
+    flex-direction: column;
+}
+
+#calendar-container {
+    max-width: 100%;
+    overflow-x: auto; /* Permite desplazamiento horizontal si es necesario */
+}
+
+#calendar {
+    width: 100%;
+    font-size: 0.8rem; /* Reduce el tamaño de la fuente */
+    text-align: center;
+    border-collapse: collapse;
+}
+
+#calendar th,
+#calendar td {
+    padding: 4px; /* Reduce el tamaño de las celdas */
+    border: 1px solid #ddd; /* Bordes más ligeros */
+    width: 14%; /* Cada día ocupa la misma proporción */
+}
+
+#calendar th {
+    background-color: #0d6efd; /* Color azul consistente */
+    color: white; /* Texto blanco */
+}
+
+#calendar-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#calendar-title {
+    font-weight: bold;
+    color: black; /* Cambiar el texto del mes a color negro */
+}
+
+.btn {
+    font-size: 0.8rem;
+}
+
+.chat-button {
+    background-color: #ffffff; /* Fondo blanco */
+    color: #000000; /* Texto negro */
+    border: 1px solid #ddd; /* Bordes ligeros */
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.chat-button:hover {
+    background-color: #0d6efd; /* Azul al pasar encima */
+    color: #ffffff; /* Texto blanco */
+}
+
+.chat-button .badge {
+    background-color: #dc3545; /* Rojo para el indicador */
+    color: #ffffff;
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    border-radius: 50%;
+}
+
+#divCentral {
+    margin-right: 15%; /* Espacio para el calendario */
+}
+
+.task {
+    margin-bottom: 15px;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.task.green {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.task.yellow {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.task.red {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+footer {
+    background: linear-gradient(135deg, #262626, #262626); /* Degradado azul */
+    color: #ffffff; /* Color del texto en blanco */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 15px;
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra alrededor */
+}
