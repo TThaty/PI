@@ -292,7 +292,9 @@ function renderizarUsuarios() {
             </div>
             <div class="usuario-detalles" id="detalles-${usuario.id}">
                 <button class="btn btn-primary" onclick="abrirFormularioVacaciones('${usuario.nombre}')">Establecer Vacaciones</button>
-                                <button id="botonBaja" class="btn btn-danger" onclick="darBajaUsuario('${usuario.nombre}')">Dar de Baja</button>
+                <button type="button" class="btn btn-primary" onclick="abrirFormularioHorarios('${usuario.nombre}')">Asignar Horarios</button>
+                <button type="button" class="btn btn-primary" onclick="consultarHorariosYVacaciones('${usuario.nombre}')">Consultar Horario y Vacaciones</button>
+                <button id="botonBaja" class="btn btn-danger" onclick="darBajaUsuario('${usuario.nombre}')">Dar de Baja</button>
             </div>
         `;
         lista.appendChild(li);
@@ -463,11 +465,11 @@ function abrirFormularioVacaciones(usuario) {
         <form id="formVacaciones">
             <div class="mb-3">
                 <label for="inicioVacaciones" class="form-label">Inicio:</label>
-                <input type="date" id="inicioVacaciones" class="form-control">
+                <input type="date" id="inicioVacaciones" class="form-control" required>
             </div>
             <div class="mb-3">
                 <label for="finVacaciones" class="form-label">Fin:</label>
-                <input type="date" id="finVacaciones" class="form-control">
+                <input type="date" id="finVacaciones" class="form-control" required>
             </div>
             <button type="button" class="btn btn-primary" onclick="establecerVacaciones('${usuario}')">Guardar</button>
         </form>
@@ -475,11 +477,72 @@ function abrirFormularioVacaciones(usuario) {
     abrirModal("Establecer Vacaciones", contenido);
 }
 
+function abrirFormularioHorarios(usuario) {
+    const contenido = `
+        <h5>Asignar Horarios para ${usuario}</h5>
+        <form id="formHorarios">
+            <div class="mb-3">
+                <label for="horaInicio" class="form-label">Hora de Inicio:</label>
+                <input type="time" id="horaInicio" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="horaFin" class="form-label">Hora de Fin:</label>
+                <input type="time" id="horaFin" class="form-control" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="asignarHorarios('${usuario}')">Guardar</button>
+        </form>
+    `;
+    abrirModal("Asignar Horarios", contenido);
+}
+
 function establecerVacaciones(usuario) {
     const inicio = document.getElementById("inicioVacaciones").value;
     const fin = document.getElementById("finVacaciones").value;
+
+    if (!inicio || !fin) {
+        alert("Por favor, completa ambos campos.");
+        return;
+    }
+
+    let vacaciones = JSON.parse(localStorage.getItem("vacaciones")) || {};
+    vacaciones[usuario] = { inicio, fin };
+    localStorage.setItem("vacaciones", JSON.stringify(vacaciones));
+
     mostrarAlerta(`Vacaciones asignadas a ${usuario} desde ${inicio} hasta ${fin}.`, "success");
     cerrarModal();
+}
+
+function asignarHorarios(usuario) {
+    const horaInicio = document.getElementById("horaInicio").value;
+    const horaFin = document.getElementById("horaFin").value;
+
+    if (!horaInicio || !horaFin) {
+        alert("Por favor, completa ambos campos.");
+        return;
+    }
+
+    let horarios = JSON.parse(localStorage.getItem("horarios")) || {};
+    horarios[usuario] = { inicio: horaInicio, fin: horaFin };
+    localStorage.setItem("horarios", JSON.stringify(horarios));
+
+    mostrarAlerta(`Horarios asignados a ${usuario}: Inicio ${horaInicio} - Fin ${horaFin}`, "success");
+    cerrarModal();
+}
+
+function consultarHorariosYVacaciones(usuario) {
+    const horarios = JSON.parse(localStorage.getItem("horarios")) || {};
+    const vacaciones = JSON.parse(localStorage.getItem("vacaciones")) || {};
+
+    const horarioUsuario = horarios[usuario] ? `Inicio: ${horarios[usuario].inicio}, Fin: ${horarios[usuario].fin}` : "No asignado";
+    const vacacionesUsuario = vacaciones[usuario] ? `Desde: ${vacaciones[usuario].inicio} hasta ${vacaciones[usuario].fin}` : "No asignado";
+
+    const contenido = `
+        <h5>Consulta de Horarios y Vacaciones para ${usuario}</h5>
+        <p><strong>Horario:</strong> ${horarioUsuario}</p>
+        <p><strong>Vacaciones:</strong> ${vacacionesUsuario}</p>
+    `;
+
+    abrirModal("Consulta de Horarios y Vacaciones", contenido);
 }
 
 function darBajaUsuario(usuarioNombre) {
@@ -1193,19 +1256,40 @@ function renderizarAverias() {
             <p><strong>Descripción:</strong> ${averia.descripcion}</p>
             <p><strong>Acciones sugeridas:</strong> ${averia.acciones}</p>
             <p><strong>Estado:</strong> ${averia.resuelta ? "Arreglada" : "Pendiente"}</p>
-            ${!averia.resuelta ? `<button onclick="marcarComoCorregida(${averia.id})">Marcar como corregida</button>` : ""}
+            <button onclick="alternarEstadoAveria(${averia.id})">
+                ${averia.resuelta ? "Marcar como no corregida" : "Marcar como corregida"}
+            </button>
         `;
+
         listItem.innerHTML = `
             <div>
-                <strong><a href="#" onclick="irAMaquina('${averia.maquina}')">${averia.maquina}</a></strong> - 
+                <strong><a href="maquinas.html" ('${averia.maquina}')">${averia.maquina}</a></strong> - 
                 <a href="#" onclick="verDetalle(${averia.id}, this)">${averia.descripcion}</a>
             </div>
             <span>${averia.resuelta ? "Corregida" : "Sin corregir"}</span>
         `;
+
         listItem.appendChild(detalles);
         listaAverias.appendChild(listItem);
     });
+}
 
+function alternarEstadoAveria(id) {
+    let averias = JSON.parse(localStorage.getItem("averias")) || [];
+
+    // Buscar la avería por ID y cambiar su estado
+    averias = averias.map(averia => {
+        if (averia.id === id) {
+            return { ...averia, resuelta: !averia.resuelta };
+        }
+        return averia;
+    });
+
+    // Guardar cambios en localStorage
+    localStorage.setItem("averias", JSON.stringify(averias));
+
+    // Volver a renderizar la lista
+    renderizarAverias();
 }
 
 function irAMaquina(maquina) {
