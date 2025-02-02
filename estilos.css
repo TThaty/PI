@@ -522,3 +522,15 @@ button:disabled {
     justify-content: flex-end;
     margin-bottom: 20px;
 }
+footer {
+    background: linear-gradient(135deg, #262626, #262626); /* Degradado azul */
+    color: #ffffff; /* Color del texto en blanco */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 15px;
+    margin-top: 125px;
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra alrededor */
+}
