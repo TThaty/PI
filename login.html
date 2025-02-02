@@ -42,22 +42,31 @@
             const usuarioEncontrado = listaActualUsuarios.find(usuario => usuario.username === username && usuario.password === password);
 
             if (usuarioEncontrado) {
-                // Generar token con expiración de 120 minutos
-                const token = {
-                    value: Math.random().toString(36).substr(2), // Genera un token aleatorio
-                    expiration: Date.now() + 120 * 60 * 1000 // 120 minutos en milisegundos
-                };
+                if (usuarioEncontrado.cambioContrasenaRequerido) {
+                    // Guardamos temporalmente el usuario en sesión sin iniciar aún
+                    localStorage.setItem("usuarioCambioContrasena", JSON.stringify(usuarioEncontrado));
 
-                // Guardar usuario y token en localStorage
-                localStorage.setItem("usuarioActual", JSON.stringify(usuarioEncontrado));
-                localStorage.setItem("tokenSesion", JSON.stringify(token));
+                    // Mostrar el modal de cambio de contraseña
+                    abrirFormularioContrasena();
+                } else {
+                    // Generar token con expiración de 120 minutos
+                    const token = {
+                        value: Math.random().toString(36).substr(2), // Genera un token aleatorio
+                        expiration: Date.now() + 120 * 60 * 1000 // 120 minutos en milisegundos
+                    };
 
-                alert("Inicio de sesión exitoso");
-                window.location.href = "pagina-principal.html";
+                    // Guardar usuario y token en localStorage
+                    localStorage.setItem("usuarioActual", JSON.stringify(usuarioEncontrado));
+                    localStorage.setItem("tokenSesion", JSON.stringify(token));
+
+                    alert("Inicio de sesión exitoso");
+                    window.location.href = "pagina-principal.html";
+                }
             } else {
                 alert("Credenciales incorrectas. Por favor, inténtalo de nuevo.");
             }
         }
+
 
         function iniciarSesion() {
             let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
@@ -98,6 +107,92 @@
 
         // Verificar sesión solo si ya había una iniciada antes
         window.onload = verificarSesion;
+
+        function abrirFormularioContrasena() {
+            const modalHtml = `
+                <div class="modal fade" id="modalCambioForzado" tabindex="-1" aria-labelledby="modalCambioForzadoLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Cambio de Contraseña Requerido</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="formCambioForzado">
+                                    <div class="mb-3">
+                                        <label for="nuevaContrasena" class="form-label">Nueva Contraseña</label>
+                                        <input type="password" class="form-control" id="nuevaContrasena" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="confirmarContrasena" class="form-label">Confirmar Nueva Contraseña</label>
+                                        <input type="password" class="form-control" id="confirmarContrasena" required>
+                                    </div>
+                                    <div id="alertaCambio" class="alert d-none"></div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" onclick="guardarNuevaContrasena()">Guardar Contraseña</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            // Insertamos el modal en el cuerpo del documento
+            document.body.insertAdjacentHTML("beforeend", modalHtml);
+
+            // Mostramos el modal
+            let modalInstance = new bootstrap.Modal(document.getElementById("modalCambioForzado"));
+            modalInstance.show();
+        }
+
+        function guardarNuevaContrasena() {
+            const nuevaContrasena = document.getElementById("nuevaContrasena").value.trim();
+            const confirmarContrasena = document.getElementById("confirmarContrasena").value.trim();
+            const alertaCambio = document.getElementById("alertaCambio");
+
+            if (nuevaContrasena.length < 4 || !/(?=.*[A-Za-z])(?=.*\d)/.test(nuevaContrasena)) {
+                alertaCambio.textContent = "La nueva contraseña debe tener al menos 4 caracteres, incluyendo una letra y un número.";
+                alertaCambio.className = "alert alert-warning mt-3";
+                alertaCambio.classList.remove("d-none");
+                return;
+            }
+
+            if (nuevaContrasena !== confirmarContrasena) {
+                alertaCambio.textContent = "Las contraseñas no coinciden.";
+                alertaCambio.className = "alert alert-danger mt-3";
+                alertaCambio.classList.remove("d-none");
+                return;
+            }
+
+            let usuario = JSON.parse(localStorage.getItem("usuarioCambioContrasena"));
+            let usuariosLS = JSON.parse(localStorage.getItem("usuarios")) || [];
+            let idx = usuariosLS.findIndex(u => u.id === usuario.id);
+
+            if (idx !== -1) {
+                usuariosLS[idx].password = nuevaContrasena;
+                usuariosLS[idx].cambioContrasenaRequerido = false;
+                localStorage.setItem("usuarios", JSON.stringify(usuariosLS));
+                localStorage.removeItem("usuarioCambioContrasena");
+
+                // Guardar sesión y redirigir
+                localStorage.setItem("usuarioActual", JSON.stringify(usuariosLS[idx]));
+                const token = {
+                    value: Math.random().toString(36).substr(2),
+                    expiration: Date.now() + 120 * 60 * 1000
+                };
+                localStorage.setItem("tokenSesion", JSON.stringify(token));
+
+                // Cerrar el modal
+                let modalInstance = bootstrap.Modal.getInstance(document.getElementById("modalCambioForzado"));
+                modalInstance.hide();
+
+                // Redirigir al usuario a la página principal
+                alert("Contraseña cambiada exitosamente. Redirigiendo...");
+                window.location.href = "pagina-principal.html";
+            }
+        }
+
 
     </script>
 

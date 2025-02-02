@@ -6,133 +6,30 @@
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Gestión de Seguridad</title>
+    <title>Gestión de Usuarios</title>
     <link rel="stylesheet" href="estilos.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-
 </head>
 <body>
     <header>
-        <h1>Gestión de Seguridad</h1>
+        <h1>Gestión de Usuarios</h1>
     </header>
 
     <!--Mostrar Nav-->
     <div id="menu-container"></div>
 
     <main>
-        <!-- Selección de usuario -->
-        <h2>Gestión de Seguridad para Usuarios</h2>
-        <div class="mb-3">
-            <label for="seleccionarUsuario" class="form-label">Seleccionar Usuario:</label>
-            <select id="seleccionarUsuario" class="form-select" onchange="actualizarUsuarioSeleccionado()">
-                <option value="" selected>Selecciona un usuario...</option>
-            </select>
-        </div>
+        <h2>Lista de Usuarios</h2>
 
-         <!-- Botones para cambio de contraseña y forzar cambio -->
-         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalForzarCambio">
-            Forzar Cambio de Contraseña
-        </button>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCambioContrasena">
-            Cambiar Contraseña
-        </button>
+        <!-- Barra de búsqueda y botón para dar de alta -->
+        <section id="barraBusqueda" class="mb-3">
+            <input type="text" id="buscadorUsuarios" placeholder="Buscar usuario..." oninput="filtrarUsuariosGestionUsuarios()">
+        </section>
 
-        <form id="formGestionUsuario">
-            <br>
-            <h4>Modificar Seguridad del Usuario</h4>
-
-            <div class="mb-3">
-                <label for="nuevoRol" class="form-label">Seleccionar Rol:</label>
-                <select id="nuevoRol" class="form-select" onchange="actualizarPermisos()">
-                    <option value="mecanico">Mecánico</option>
-                    <option value="operario">Operario</option>
-                    <option value="administrador">Administrador</option>
-                </select>
-            </div>
-
-            <h5>Permisos:</h5>
-            <div id="permisos">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoAñadirMaquinas">
-                    <label class="form-check-label" for="permisoAñadirMaquinas">Añadir Máquinas</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoModificarMaquinas">
-                    <label class="form-check-label" for="permisoModificarMaquinas">Modificar Máquinas</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoBorrarMaquinas">
-                    <label class="form-check-label" for="permisoBorrarMaquinas">Borrar Máquinas</label>
-                </div>
-                
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoAñadirAverias">
-                    <label class="form-check-label" for="permisoAñadirAverias">Añadir Avería</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoModificarAverias">
-                    <label class="form-check-label" for="permisoModificarAverias">Modificar Avería</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoBorrarAverias">
-                    <label class="form-check-label" for="permisoBorrarAverias">Borrar Avería</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoMarcarAveriaResuelta">
-                    <label class="form-check-label" for="permisoMarcarAveriaResuelta">Marcar Resuelta la Avería</label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoAñadirTareas">
-                    <label class="form-check-label" for="permisoAñadirTareas">Añadir Tareas</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoModificarTareas">
-                    <label class="form-check-label" for="permisoModificarTareas">Modificar Tareas</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoBorrarTareas">
-                    <label class="form-check-label" for="permisoBorrarTareas">Borrar Tareas</label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoAñadirUsuarios">
-                    <label class="form-check-label" for="permisoAñadirUsuarios">Añadir Usuarios</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoModificarUsuarios">
-                    <label class="form-check-label" for="permisoModificarUsuarios">Modificar Usuarios</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="permisoBorrarUsuarios">
-                    <label class="form-check-label" for="permisoBorrarUsuarios">Borrar Usuarios</label>
-                </div>
-            </div>
-            
-            <button type="button" class="btn btn-primary mt-3" onclick="guardarSeguridadUsuario()">Guardar Configuración</button>
-
-            <!-- Cambio de contraseña del usuario actual -->
-        <h2>Cambio de Contraseña del Usuario Actual (<span id="nombreUsuarioActual"></span>)</h2>
-        <form id="formCambioContrasena">
-            <div class="mb-3">
-                <label for="contrasenaActual" class="form-label">Contraseña Actual:</label>
-                <input type="password" id="contrasenaActual" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="confirmarContrasena" class="form-label">Nueva Contraseña:</label>
-                <input type="password" id="nuevaContrasenaActual" class="form-control" required>
-                <label for="confirmarContrasena" class="form-label">Confirmar Nueva Contraseña:</label>
-                <input type="password" id="confirmarContrasenaActual" class="form-control" required>
-                <small class="text-muted">Mínimo 4 caracteres, al menos una letra y un número.</small>
-            </div>
-            <button type="button" class="btn btn-primary" onclick="cambiarContrasenaActual()">Guardar Contraseña</button>
-        </form>
-        <div id="alertaContrasena" class="alert alert-success mt-3 d-none"></div>
-        </form>
-        <div id="alertaRoles" class="alert alert-success mt-3 d-none"></div>
+        <!-- Lista de usuarios -->
+        <ul id="listaUsuariosGestionSeguridad">
+            <!-- Los usuarios serán renderizados dinámicamente -->
+        </ul>
     </main>
 
     <!-- Botón de chat -->
@@ -146,36 +43,85 @@
         </div>
         <div class="chat-cuerpo">
             <div class="mensaje">
-                <strong>Máquina1:</strong> Hola, ¿cómo estás?
+                <strong>Usuario1:</strong> Hola, ¿cómo estás?
+            </div>
+            <div class="mensaje">
+                <strong>Usuario2:</strong> ¡Todo bien! ¿Y tú?
+            </div>
+            <div class="mensaje">
+                <strong>Usuario3:</strong> Necesito ayuda con una tarea.
             </div>
         </div>
         <div class="chat-pie">
             <input type="text" id="mensajeInput" placeholder="Escribe un mensaje...">
-            <button onclick="enviarMensaje()">Enviar</button>
+            <button type="button" class="btn btn-primary" onclick="enviarMensaje()">Enviar</button>
         </div>
     </div>
+    
 
-    <div class="modal fade" id="modalForzarCambio" tabindex="-1" aria-labelledby="modalForzarCambioLabel" aria-hidden="true">
+    <!-- Modal de formularios -->
+    <div class="modal fade" id="modalDinamico" tabindex="-1" aria-labelledby="modalDinamicoLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Forzar Cambio de Contraseña</h5>
+                    <h5 class="modal-title" id="modalDinamicoLabel">Título del Modal</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
-                    <p>¿Estás seguro de que deseas obligar al usuario <strong id="usuarioForzarCambio"></strong> a cambiar su contraseña en el próximo inicio de sesión?</p>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="forzarCambioContrasena">
-                        <label class="form-check-label" for="forzarCambioContrasena">Obligar cambio de contraseña</label>
+                    <div id="contenidoModal">
+                        <!-- Aquí se cargará el contenido dinámicamente -->
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="btnConfirmarForzarCambio" onclick="guardarForzarCambio()" disabled>Confirmar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalPermisosUsuario" tabindex="-1" aria-labelledby="modalPermisosUsuarioLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modificar Permisos de <span id="nombreUsuarioPermisos"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="permisosUsuario">
+                        <!-- Aquí se generarán los permisos dinámicamente -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="guardarPermisosUsuario()">Guardar Permisos</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Forzar Cambio de Contraseña -->
+    <div class="modal fade" id="modalForzarCambio" tabindex="-1" aria-labelledby="modalForzarCambioLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="modalForzarCambioLabel">Forzar Cambio de Contraseña</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+            <p>¿Estás seguro de que deseas obligar al usuario a cambiar su contraseña en el próximo inicio de sesión?</p>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="forzarCambioContrasena" onchange="habilitarBotonConfirmar()">
+                <label class="form-check-label" for="forzarCambioContrasena">Obligar cambio de contraseña</label>
+            </div>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="btnConfirmarForzarCambio" onclick="guardarForzarCambio()" disabled>Confirmar</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    
 
     <div class="modal fade" id="modalCambioContrasena" tabindex="-1" aria-labelledby="modalCambioContrasenaLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -187,22 +133,21 @@
                 <div class="modal-body">
                     <form id="formCambioContrasena">
                         <div class="mb-3">
-                            <label for="nuevaContrasena" class="form-label">Nueva Contraseña:</label>
+                            <label for="nuevaContrasenaModal" class="form-label">Nueva Contraseña:</label>
                             <input type="password" id="nuevaContrasenaModal" class="form-control" required>
                             <small class="text-muted">Mínimo 4 caracteres, al menos una letra y un número.</small>
                         </div>
                         <div class="mb-3">
-                            <label for="confirmarContrasena" class="form-label">Confirmar Nueva Contraseña:</label>
+                            <label for="confirmarContrasenaModal" class="form-label">Confirmar Nueva Contraseña:</label>
                             <input type="password" id="confirmarContrasenaModal" class="form-control" required>
                         </div>
-    
-                        <!-- 🔹 Alerta dentro del modal -->
+                        <!-- Contenedor de alerta dentro del modal -->
                         <div id="alertaContrasenaModal" class="alert d-none mt-3 text-center"></div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="cambiarContrasenaNueva()">Guardar Contraseña</button>
+                    <button type="button" class="btn btn-primary" onclick="cambiarContrasenaDelUsuarioSeleccionado()">Guardar Contraseña</button>
                 </div>
             </div>
         </div>

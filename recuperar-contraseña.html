@@ -1,73 +1,48 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Contraseña</title>
-    <link rel="stylesheet" href="estilos.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar Contraseña</title>
+  <link rel="stylesheet" href="estilos.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>Gestión de maquinaria</h1>
-    </header>
+  <header>
+    <h1>Gestión de Maquinaria</h1>
+  </header>
 
-    <main class="d-flex justify-content-center align-items-center">
-        <div class="card p-4 shadow" style="width: 400px; margin-top: 70px;">
-            <h2 class="text-center mb-4">Recuperar Contraseña</h2>
-            <form id="recoveryForm" onsubmit="handleRecovery(event)">
-                <div class="mb-3">
-                    <label for="username" class="form-label">Nombre de usuario</label>
-                    <input type="text" class="form-control" id="username" placeholder="Usuario" required>
-                </div>
-                <div class="mb-3">
-                    <label for="newPassword" class="form-label">Nueva Contraseña</label>
-                    <input type="password" class="form-control" id="newPassword" placeholder="Nueva contraseña" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Recuperar Contraseña</button>
-            </form>
-            <div class="mt-3 text-center">
-                <a href="login.html" class="text-decoration-none">Volver al inicio de sesión</a>
-            </div>
+  <main class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card p-4 shadow" style="width: 400px;">
+      <h2 class="text-center mb-4">Recuperar Contraseña</h2>
+      <!-- Contenedor para mostrar alertas dentro de la tarjeta -->
+      <div id="alertRecovery" class="alert d-none" role="alert"></div>
+      
+      <form id="recoveryForm" onsubmit="handleRecovery(event)">
+        <div class="mb-3">
+          <label for="username" class="form-label">Nombre de usuario</label>
+          <input type="text" class="form-control" id="username" placeholder="Usuario" required>
         </div>
-    </main>
+        <div class="mb-3">
+          <label for="newPassword" class="form-label">Nueva Contraseña</label>
+          <input type="password" class="form-control" id="newPassword" placeholder="Nueva contraseña" required>
+          <small class="text-muted">Mínimo 4 caracteres, al menos una letra y un número.</small>
+        </div>
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label">Confirmar Nueva Contraseña</label>
+          <input type="password" class="form-control" id="confirmPassword" placeholder="Confirmar contraseña" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Recuperar Contraseña</button>
+      </form>
+      
+      <div class="mt-3 text-center">
+        <a href="login.html" class="text-decoration-none">Volver al inicio de sesión</a>
+      </div>
+    </div>
+  </main>
 
-    <script>
-        const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-    
-        function handleRecovery(event) {
-            event.preventDefault();
-    
-            const username = document.getElementById("username").value.trim();
-            const newPassword = document.getElementById("newPassword").value.trim();
-    
-            if (!username || !newPassword) {
-                alert("Por favor, completa todos los campos.");
-                return;
-            }
-    
-            let usuarioEncontrado = false;
-    
-            for (const usuario of usuarios) {
-                if (usuario.username === username) {
-                    usuario.password = newPassword; // Actualiza la contraseña
-                    usuarioEncontrado = true;
-                    break;
-                }
-            }
-    
-            if (usuarioEncontrado) {
-                // Guarda los usuarios actualizados en localStorage
-                localStorage.setItem("usuarios", JSON.stringify(usuarios));
-                alert(`La contraseña del usuario "${username}" se ha actualizado correctamente.`);
-                window.location.href = "login.html"; // Redirige al login
-            } else {
-                alert("El nombre de usuario no existe. Por favor, inténtalo de nuevo.");
-            }
-        }
-    </script>
-    
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script src="scripts.js"></script>
 </body>
 </html>

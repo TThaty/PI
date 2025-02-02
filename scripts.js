@@ -1,12 +1,95 @@
+// -----------------------
+// Variables y constantes globales
+// -----------------------
 const calendarTitle = document.getElementById('calendar-title');
 const calendarBody = document.getElementById('calendar-body');
-
 let currentDate = new Date();
 
+const permisosDisponibles = [
+    "permisoAñadirMaquinas",
+    "permisoModificarMaquinas",
+    "permisoBorrarMaquinas",
+    "permisoAñadirAverias",
+    "permisoModificarAverias",
+    "permisoBorrarAverias",
+    "permisoMarcarAveriaResuelta",
+    "permisoAñadirTareas",
+    "permisoModificarTareas",
+    "permisoBorrarTareas",
+    "permisoAñadirUsuarios",
+    "permisoModificarUsuarios",
+    "permisoBorrarUsuarios"
+];
+
+let usuarioSeleccionadoGlobal = null;
+
 const usuarios = [
-    { id: 1, nombre: "Juan Pérez", username: "juanpe", password: "1234", rol: "Administrador" },
-    { id: 2, nombre: "Ana López", username: "analopez", password: "1234", rol: "Operario" },
-    { id: 3, nombre: "Luis García", username: "luisgarcia", password: "1234", rol: "Mecánico" }
+    { 
+        id: 1, 
+        nombre: "Juan Pérez", 
+        username: "juanpe", 
+        password: "1234", 
+        rol: "Administrador",
+        permisos: {
+            permisoAñadirMaquinas: true,
+            permisoModificarMaquinas: true,
+            permisoBorrarMaquinas: true,
+            permisoAñadirAverias: true,
+            permisoModificarAverias: true,
+            permisoBorrarAverias: true,
+            permisoMarcarAveriaResuelta: true,
+            permisoAñadirTareas: true,
+            permisoModificarTareas: true,
+            permisoBorrarTareas: true,
+            permisoAñadirUsuarios: true,
+            permisoModificarUsuarios: true,
+            permisoBorrarUsuarios: true
+        }
+    },
+    { 
+        id: 2, 
+        nombre: "Ana López", 
+        username: "analopez", 
+        password: "1234", 
+        rol: "Operario",
+        permisos: {
+            permisoAñadirMaquinas: false,
+            permisoModificarMaquinas: false,
+            permisoBorrarMaquinas: false,
+            permisoAñadirAverias: true,
+            permisoModificarAverias: true,
+            permisoBorrarAverias: false,
+            permisoMarcarAveriaResuelta: true,
+            permisoAñadirTareas: true,
+            permisoModificarTareas: true,
+            permisoBorrarTareas: false,
+            permisoAñadirUsuarios: false,
+            permisoModificarUsuarios: false,
+            permisoBorrarUsuarios: false
+        }
+    },
+    { 
+        id: 3, 
+        nombre: "Luis García", 
+        username: "luisgarcia", 
+        password: "1234", 
+        rol: "Mecánico",
+        permisos: {
+            permisoAñadirMaquinas: false,
+            permisoModificarMaquinas: false,
+            permisoBorrarMaquinas: false,
+            permisoAñadirAverias: true,
+            permisoModificarAverias: true,
+            permisoBorrarAverias: false,
+            permisoMarcarAveriaResuelta: true,
+            permisoAñadirTareas: false,
+            permisoModificarTareas: false,
+            permisoBorrarTareas: false,
+            permisoAñadirUsuarios: false,
+            permisoModificarUsuarios: false,
+            permisoBorrarUsuarios: false
+        }
+    }
 ];
 
 // Inicializar usuarios en localStorage si no existen
@@ -16,40 +99,38 @@ if (!localStorage.getItem("usuarios")) {
 
 const maquinas = [
     {
-            id: 1,
-            nombre: "Excavadora 3000",
-            tipo: "Excavadora",
-            trabajo: "Excavación",
-            modelo: "Caterpillar X3",
-            fechaMantenimiento: "2023-12-01",
-            realizadoPor: "Juan Pérez",
-            estado: "Funcionando"
-        },
-        {
-            id: 2,
-            nombre: "Grúa Industrial",
-            tipo: "Grúa",
-            trabajo: "Construcción",
-            modelo: "Liebherr LTM",
-            fechaMantenimiento: "2023-11-15",
-            realizadoPor: "Ana López",
-            estado: "Averiada"
-        },
-        {
-            id: 3,
-            nombre: "Excavadora 2500",
-            tipo: "Excavadora",
-            trabajo: "Excavación",
-            modelo: "Caterpillar X2",
-            fechaMantenimiento: "2023-12-01",
-            realizadoPor: "Juan Pérez",
-            estado: "Funcionando"
-        },
-    ];
-
+        id: 1,
+        nombre: "Excavadora 3000",
+        tipo: "Excavadora",
+        trabajo: "Excavación",
+        modelo: "Caterpillar X3",
+        fechaMantenimiento: "2023-12-01",
+        realizadoPor: "Juan Pérez",
+        estado: "Funcionando"
+    },
+    {
+        id: 2,
+        nombre: "Grúa Industrial",
+        tipo: "Grúa",
+        trabajo: "Construcción",
+        modelo: "Liebherr LTM",
+        fechaMantenimiento: "2023-11-15",
+        realizadoPor: "Ana López",
+        estado: "Averiada"
+    },
+    {
+        id: 3,
+        nombre: "Excavadora 2500",
+        tipo: "Excavadora",
+        trabajo: "Excavación",
+        modelo: "Caterpillar X2",
+        fechaMantenimiento: "2023-12-01",
+        realizadoPor: "Juan Pérez",
+        estado: "Funcionando"
+    }
+];
 let maquinaEditandoId = null;
-let nextId = maquinas.length ? Math.max(...maquinas.map(maquina => maquina.id)) + 1 : 1;
-
+let nextId = maquinas.length ? Math.max(...maquinas.map(m => m.id)) + 1 : 1;
 if (!localStorage.getItem("maquinas")) {
     localStorage.setItem("maquinas", JSON.stringify(maquinas));
 }
@@ -58,7 +139,6 @@ const averias = [
     { id: 1, maquina: "Torno CNC", descripcion: "La máquina no enciende.", acciones: "Revisar el sistema eléctrico y los fusibles.", resuelta: false },
     { id: 2, maquina: "Prensa Hidráulica", descripcion: "Pérdida de presión en el sistema.", acciones: "Verificar las juntas y reemplazar las dañadas.", resuelta: true }
 ];
-
 if (!localStorage.getItem("averias")) {
     localStorage.setItem("averias", JSON.stringify(averias));
 }
@@ -89,33 +169,21 @@ const tareas = [
         historial: []
     }
 ];
-
 if (!localStorage.getItem("tareas")) {
     localStorage.setItem("tareas", JSON.stringify(tareas));
 }
 
+// -----------------------
+// Funciones de inicialización y renderizado
+// -----------------------
 document.addEventListener("DOMContentLoaded", function () {
-    if (document.getElementById("listaMaquinas")) {
-        renderizarMaquinas();
-    }
-
-    if (document.getElementById("listaUsuarios")) {
-        renderizarUsuarios();
-    }
-
-    if (document.getElementById("listaAverias")) {
-        renderizarAverias();
-    }
-
-    if (document.getElementById("listaTareas")) {
-        renderizarTareas();
-    }
-
-    if (document.getElementById("calendar-title") &&
-        document.getElementById("calendar-title")) {
-        renderCalendar();
-    }
-
+    if (document.getElementById("listaMaquinas")) renderizarMaquinas();
+    if (document.getElementById("listaUsuarios")) renderizarUsuarios();
+    if (document.getElementById("listaUsuariosGestionSeguridad")) renderizarUsuariosGestionSeguridad();
+    if (document.getElementById("listaAverias")) renderizarAverias();
+    if (document.getElementById("listaTareas")) renderizarTareas();
+    if (document.getElementById("calendar-title")) renderCalendar();
+    
     verificarSesion();
     mostrarMenu();
     cargarUsuariosGestionUsuarios();
@@ -123,27 +191,25 @@ document.addEventListener("DOMContentLoaded", function () {
     mostrarUsuarioActual();
 });
 
+// -----------------------
+// Funciones de calendario (si se usan)
+// -----------------------
 function renderCalendar() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-
     const monthNames = [
         "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
         "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
     ];
     calendarTitle.textContent = `${monthNames[month]} ${year}`;
-
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-
     calendarBody.innerHTML = "";
-
     let row = document.createElement('tr');
     for (let day = 1; day <= daysInMonth; day++) {
         const cell = document.createElement('td');
         cell.textContent = day;
         row.appendChild(cell);
-
         if ((firstDay + day - 1) % 7 === 6 || day === daysInMonth) {
             calendarBody.appendChild(row);
             row = document.createElement('tr');
@@ -156,7 +222,15 @@ function changeMonth(offset) {
     renderCalendar();
 }
 
+// -----------------------
+// Funciones de sesión y menú
+// -----------------------
 function verificarSesion() {
+    // Si la URL contiene "recuperar.html", salimos sin hacer nada.
+    if (window.location.href.indexOf("recuperar") !== -1) {
+        return;
+    }
+    
     let usuarioActual = localStorage.getItem("usuarioActual");
     
     if (!usuarioActual) {
@@ -165,23 +239,65 @@ function verificarSesion() {
     }
 }
 
+
 function cerrarSesion() {
-    // Eliminar datos de sesión del localStorage
     localStorage.removeItem("usuarioActual");
     localStorage.removeItem("tokenSesion");
-
-    // Intentar redirigir con un pequeño retraso para evitar restricciones del navegador
-    setTimeout(() => {
-        window.location.replace("login.html");
-    }, 100);
+    setTimeout(() => { window.location.replace("login.html"); }, 100);
 }
 
+function mostrarMenu() {
+    const menuHTML = `
+        <nav class="d-flex justify-content-center">
+            <ul class="nav">
+                <a href="pagina-principal.html" target="_self">Página principal</a>
+                <a href="maquinas.html" target="_self">Gestión de Máquinas</a>
+                <a href="averias.html" target="_self">Gestión de Averías</a>
+                <a href="tareas.html" target="_self">Gestión de Tareas</a>
+                <a href="usuarios.html" target="_self">Gestión de Usuarios</a>
+                <a href="seguridad.html" target="_self">Gestión de Seguridad</a>
+                <a href="#" onclick="cerrarSesion()" title="Cerrar sesión">
+                    <img src="img/log-out.png" alt="Cerrar sesión" style="width: 30px; height: 30px; filter: invert(1);">
+                </a>
+            </ul>
+        </nav>
+    `;
+    document.getElementById("menu-container").innerHTML = menuHTML;
+}
+
+function mostrarUsuarioActual() {
+    const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
+    if (usuarioActual) {
+        document.getElementById("nombreUsuarioActual").textContent = usuarioActual.username;
+    }
+}
+
+// -----------------------
+// Funciones de renderizado de usuarios
+// -----------------------
 function renderizarUsuarios() {
     const lista = document.getElementById("listaUsuarios");
     let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    lista.innerHTML = "";
+    usuarios.forEach(usuario => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <div class="usuario-header" onclick="toggleUsuario(${usuario.id})">
+                <strong>${usuario.nombre}</strong>
+            </div>
+            <div class="usuario-detalles" id="detalles-${usuario.id}">
+                <button class="btn btn-primary" onclick="abrirFormularioVacaciones('${usuario.nombre}')">Establecer Vacaciones</button>
+                                <button id="botonBaja" class="btn btn-danger" onclick="darBajaUsuario('${usuario.nombre}')">Dar de Baja</button>
+            </div>
+        `;
+        lista.appendChild(li);
+    });
+}
 
-    lista.innerHTML = ""; // Limpiar la lista
-
+function renderizarUsuariosGestionSeguridad() {
+    const lista = document.getElementById("listaUsuariosGestionSeguridad");
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    lista.innerHTML = "";
     usuarios.forEach(usuario => {
         const li = document.createElement("li");
         li.innerHTML = `
@@ -190,106 +306,43 @@ function renderizarUsuarios() {
                 <span class="rol">${usuario.rol}</span>
             </div>
             <div class="usuario-detalles" id="detalles-${usuario.id}">
-                <button class="btn btn-primary" onclick="abrirFormularioRol('${usuario.nombre}')">Asignar Rol</button>
-                <button class="btn btn-primary" onclick="abrirFormularioMaquinas('${usuario.nombre}')">Asignar Máquina</button>
-                <button class="btn btn-primary" onclick="abrirFormularioVacaciones('${usuario.nombre}')">Establecer Vacaciones</button>
-                <button id="botonBaja" class="btn btn-danger" onclick="darBajaUsuario('${usuario.nombre}')">
-                    Dar de Baja
-                </button>
+                <button class="btn btn-primary" onclick="abrirFormularioRol('${usuario.nombre}')">Cambiar Rol</button>
+                <button class="btn btn-primary" onclick="abrirModalPermisosUsuario('${usuario.nombre}')">Modificar Permisos</button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCambioContrasena" onclick="cambiarContrasenaDelUsuarioSeleccionado()">Cambiar Contraseña</button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalForzarCambio">Obligar Cambio</button>
             </div>
         `;
         lista.appendChild(li);
     });
 }
 
+// -----------------------
+// Funciones para seleccionar usuario (actualiza la variable global)
+// -----------------------
+function toggleUsuario(id) {
+    const detalles = document.getElementById(`detalles-${id}`);
+    detalles.classList.toggle("activo");
+    let usuariosLS = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let usuario = usuariosLS.find(u => u.id === id);
+    if (usuario) {
+        usuarioSeleccionadoGlobal = usuario;
+    }
+}
+
+
+// -----------------------
+// Funciones para formularios modales
+// -----------------------
 function abrirModal(titulo, contenidoHTML) {
     const modalElement = document.getElementById("modalDinamico");
-
     document.getElementById("modalDinamicoLabel").textContent = titulo;
     document.getElementById("contenidoModal").innerHTML = contenidoHTML;
-
     let modalInstance = bootstrap.Modal.getInstance(modalElement);
     if (!modalInstance) {
         modalInstance = new bootstrap.Modal(modalElement);
     }
     modalInstance.show();
 }
-
-function filtrarUsuariosGestionUsuarios() {
-    const filtro = document.getElementById("buscadorUsuarios").value.toLowerCase();
-    const lista = document.getElementById("listaUsuarios").children;
-    for (const usuario of lista) {
-        const nombre = usuario.querySelector(".usuario-header").innerText.toLowerCase();
-        usuario.style.display = nombre.includes(filtro) ? "" : "none";
-    }
-}
-
-function filtrarUsuariosGestionSeguridad() {
-    let filtro = document.getElementById("buscadorUsuarios").value.toLowerCase();
-    let select = document.getElementById("seleccionarUsuario");
-    let lista = document.getElementById("listaUsuariosFiltrados");
-
-    select.innerHTML = '<option value="">Selecciona un usuario...</option>';
-    lista.innerHTML = "";
-
-    let coincidencias = usuarios.filter(usuario => usuario.toLowerCase().includes(filtro));
-
-    // Si hay coincidencias, muestra la lista
-    if (coincidencias.length > 0) {
-        lista.classList.remove("d-none");
-    } else {
-        lista.classList.add("d-none");
-    }
-
-    coincidencias.forEach(usuario => {
-        // Agregar al <select>
-        let option = document.createElement("option");
-        option.value = usuario;
-        option.textContent = usuario;
-        select.appendChild(option);
-
-        // Agregar a la lista filtrada
-        let li = document.createElement("li");
-        li.textContent = usuario;
-        li.classList.add("list-group-item", "list-group-item-action");
-        li.onclick = function() {
-            document.getElementById("buscadorUsuarios").value = usuario;
-            select.value = usuario;
-            actualizarUsuarioSeleccionado();
-            lista.classList.add("d-none"); // Ocultar la lista después de seleccionar
-        };
-        lista.appendChild(li);
-    });
-}
-
-
-function toggleUsuario(id) {
-    const detalles = document.getElementById(`detalles-${id}`);
-    detalles.classList.toggle("activo");
-}
-
-function abrirFormularioMaquinas(usuario) {
-    const contenido = `
-        <h5>Asignar Máquina a ${usuario}</h5>
-        <form id="formMaquina">
-            <div class="mb-3">
-                <label for="maquina" class="form-label">Máquina:</label>
-                <input type="text" id="maquina" class="form-control" placeholder="ID o Nombre de la Máquina">
-            </div>
-            <div class="mb-3">
-                <label for="permiso" class="form-label">Permiso:</label>
-                <select id="permiso" class="form-select">
-                    <option value="Lectura">Lectura</option>
-                    <option value="Escritura">Escritura</option>
-                    <option value="Administrador">Administrador</option>
-                </select>
-            </div>
-            <button type="button" class="btn btn-primary" onclick="asignarMaquina('${usuario}')">Guardar</button>
-        </form>
-    `;
-    abrirModal("Asignar Máquina", contenido);
-}
-
 
 function abrirFormularioRol(usuario) {
     const contenido = `
@@ -309,6 +362,95 @@ function abrirFormularioRol(usuario) {
     abrirModal("Asignar Rol", contenido);
 }
 
+function asignarRol(usuario) {
+    const rol = document.getElementById("rol").value;
+    let usuariosLS = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let usuarioIndex = usuariosLS.findIndex(u => u.nombre === usuario);
+    if (usuarioIndex !== -1) {
+        usuariosLS[usuarioIndex].rol = rol;
+        localStorage.setItem("usuarios", JSON.stringify(usuariosLS));
+        mostrarAlerta(`Rol "${rol}" asignado a ${usuario}.`, "success");
+        renderizarUsuariosGestionSeguridad();
+    }
+    cerrarModal();
+}
+
+function abrirModalPermisosUsuario(nombreUsuario) {
+    document.getElementById("nombreUsuarioPermisos").textContent = nombreUsuario;
+    let usuariosLS = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let usuario = usuariosLS.find(u => u.nombre === nombreUsuario);
+    if (!usuario) {
+        alert("Error: Usuario no encontrado.");
+        return;
+    }
+    let permisosHTML = "";
+    if (usuario.rol === "Operario") {
+        permisosHTML += '<h6>Selecciona las máquinas a las que tendrá acceso:</h6>';
+        let maquinasLS = JSON.parse(localStorage.getItem("maquinas")) || [];
+        maquinasLS.forEach(maquina => {
+            let checked = "";
+            if (usuario.permisos && usuario.permisos.accesosMaquinas && usuario.permisos.accesosMaquinas.includes(maquina.id)) {
+                checked = "checked";
+            }
+            permisosHTML += `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="maquina-${maquina.id}" value="${maquina.id}" ${checked}>
+                <label class="form-check-label" for="maquina-${maquina.id}">${maquina.nombre}</label>
+            </div>`;
+        });
+        permisosHTML += `<br><h6>Selecciona si el usuario tendrá acceso a:</h6>`;
+        permisosHTML += `
+        <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" id="notificarAveria" ${usuario.permisos && usuario.permisos.notificarAveria ? "checked" : ""}>
+            <label class="form-check-label" for="notificarAveria">Notificar avería</label>
+        </div>`;
+    } else {
+        permisosHTML = permisosDisponibles.map(permiso => `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="${permiso}" ${usuario.permisos && usuario.permisos[permiso] ? "checked" : ""}>
+                <label class="form-check-label" for="${permiso}">${permiso.replace("permiso", "").replace(/([A-Z])/g, ' $1')}</label>
+            </div>
+        `).join("");
+    }
+    document.getElementById("permisosUsuario").innerHTML = permisosHTML;
+    let modalInstance = new bootstrap.Modal(document.getElementById("modalPermisosUsuario"));
+    modalInstance.show();
+}
+
+function guardarPermisosUsuario() {
+    let nombreUsuario = document.getElementById("nombreUsuarioPermisos").textContent;
+    let usuariosLS = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let usuario = usuariosLS.find(u => u.nombre === nombreUsuario);
+    if (!usuario) {
+        alert("Error: Usuario no encontrado.");
+        return;
+    }
+    if (usuario.rol === "Operario") {
+        let accesosMaquinas = [];
+        let maquinasLS = JSON.parse(localStorage.getItem("maquinas")) || [];
+        maquinasLS.forEach(maquina => {
+            const checkbox = document.getElementById(`maquina-${maquina.id}`);
+            if (checkbox && checkbox.checked) {
+                accesosMaquinas.push(maquina.id);
+            }
+        });
+        const notificarAveria = document.getElementById("notificarAveria").checked;
+        usuario.permisos = {
+            accesosMaquinas: accesosMaquinas,
+            notificarAveria: notificarAveria
+        };
+    } else {
+        const nuevosPermisos = {};
+        document.querySelectorAll("#permisosUsuario .form-check-input").forEach(input => {
+            nuevosPermisos[input.id] = input.checked;
+        });
+        usuario.permisos = nuevosPermisos;
+    }
+    localStorage.setItem("usuarios", JSON.stringify(usuariosLS));
+    alert(`Permisos actualizados para ${nombreUsuario}`);
+    let modalInstance = bootstrap.Modal.getInstance(document.getElementById("modalPermisosUsuario"));
+    modalInstance.hide();
+}
 
 function abrirFormularioVacaciones(usuario) {
     const contenido = `
@@ -328,154 +470,168 @@ function abrirFormularioVacaciones(usuario) {
     abrirModal("Establecer Vacaciones", contenido);
 }
 
+function establecerVacaciones(usuario) {
+    const inicio = document.getElementById("inicioVacaciones").value;
+    const fin = document.getElementById("finVacaciones").value;
+    mostrarAlerta(`Vacaciones asignadas a ${usuario} desde ${inicio} hasta ${fin}.`, "success");
+    cerrarModal();
+}
 
 function darBajaUsuario(usuarioNombre) {
-    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-
+    let usuariosLS = JSON.parse(localStorage.getItem("usuarios")) || [];
     if (confirm(`¿Seguro que quieres dar de baja a ${usuarioNombre}? Esta acción no se puede deshacer.`)) {
-        usuarios = usuarios.filter(usuario => usuario.nombre !== usuarioNombre);
-
-        // Guardar cambios en localStorage
-        localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
-        // Volver a renderizar la lista de usuarios
+        usuariosLS = usuariosLS.filter(usuario => usuario.nombre !== usuarioNombre);
+        localStorage.setItem("usuarios", JSON.stringify(usuariosLS));
         renderizarUsuarios();
-
         mostrarAlerta(`El usuario "${usuarioNombre}" ha sido dado de baja correctamente.`, "danger");
     }
 }
 
 function cerrarModal() {
     const modalElement = document.getElementById("modalDinamico");
-
     if (!modalElement) {
         console.error("No se encontró el modal.");
         return;
     }
-
     const modalInstance = bootstrap.Modal.getInstance(modalElement);
-
     if (modalInstance) {
-        modalInstance.hide(); // 🔹 Cierra el modal correctamente
+        modalInstance.hide();
     } else {
-        console.warn("El modal no estaba inicializado, se cerrará manualmente.");
         modalElement.classList.remove("show");
         modalElement.style.display = "none";
         document.body.classList.remove("modal-open");
-
-        // Eliminar backdrop si no se cerró automáticamente
         const backdrop = document.querySelector(".modal-backdrop");
-        if (backdrop) {
-            backdrop.remove();
-        }
+        if (backdrop) backdrop.remove();
     }
 }
 
-
-function asignarRol(usuario) {
-    const rol = document.getElementById("rol").value;
-    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-
-    let usuarioIndex = usuarios.findIndex(u => u.nombre === usuario);
-    if (usuarioIndex !== -1) {
-        usuarios[usuarioIndex].rol = rol;
-        localStorage.setItem("usuarios", JSON.stringify(usuarios));
-        mostrarAlerta(`Rol "${rol}" asignado a ${usuario}.`, "success");
-        renderizarUsuarios();
+function mostrarAlerta(mensaje, tipo, permanente = false) {
+    const main = document.querySelector("main");
+    let alertContainer = document.getElementById("alert-container");
+    if (!alertContainer) {
+        alertContainer = document.createElement("div");
+        alertContainer.id = "alert-container";
+        main.prepend(alertContainer);
     }
-
-    cerrarModal();
+    const alerta = document.createElement("div");
+    alerta.className = `alert alert-${tipo} alert-dismissible fade show`;
+    alerta.role = "alert";
+    alerta.style.width = "100%";
+    alerta.innerHTML = `
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    if (permanente) {
+        alertContainer.innerHTML = "";
+    }
+    alertContainer.appendChild(alerta);
+    if (!permanente) {
+        setTimeout(() => {
+            if (alerta && alerta.parentNode) alerta.remove();
+        }, 3000);
+    }
 }
 
-function asignarMaquina(usuario) {
-    const maquina = document.getElementById("maquina").value;
-    const permiso = document.getElementById("permiso").value;
-
-    mostrarAlerta(`Máquina "${maquina}" asignada a ${usuario} con permiso "${permiso}".`, "success");
-    cerrarModal();
-}
-
-function establecerVacaciones(usuario) {
-    const inicio = document.getElementById("inicioVacaciones").value;
-    const fin = document.getElementById("finVacaciones").value;
-
-    mostrarAlerta(`Vacaciones asignadas a ${usuario} desde ${inicio} hasta ${fin}.`, "success");
-    cerrarModal();
-}
-
-function cambiarContrasenaModal() {
+// -----------------------
+// Funciones para cambiar contraseña
+// -----------------------
+function cambiarContrasenaDelUsuarioSeleccionado() {
+    const alertaModal = document.getElementById("alertaContrasenaModal");
+    if (!usuarioSeleccionadoGlobal) {
+        alertaModal.textContent = "Por favor, seleccione un usuario antes de cambiar la contraseña.";
+        alertaModal.className = "alert alert-danger mt-3";
+        alertaModal.classList.remove("d-none");
+        setTimeout(() => { alertaModal.classList.add("d-none"); }, 3000);
+        return;
+    }
     const nueva = document.getElementById("nuevaContrasenaModal").value.trim();
     const confirmar = document.getElementById("confirmarContrasenaModal").value.trim();
-    // ... validaciones y lógica ...
-}
-
-function cambiarContrasenaActual() {
-    const contrasenaActual = document.getElementById("contrasenaActual").value.trim();
-    const nueva = document.getElementById("nuevaContrasenaActual").value.trim();
-    const confirmar = document.getElementById("confirmarContrasenaActual").value.trim();
-    const alerta = document.getElementById("alertaContrasena");
-
-    let usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
-    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-    let usuarioIndex = usuarios.findIndex(u => u.username === usuarioActual.username);
-
-    if (usuarioIndex === -1) {
-        mostrarAlerta("❌ Error: Usuario no encontrado.", "danger");
+    if (!nueva || !confirmar) {
+        alertaModal.textContent = "Por favor, complete ambos campos de la nueva contraseña.";
+        alertaModal.className = "alert alert-warning mt-3";
+        alertaModal.classList.remove("d-none");
+        setTimeout(() => { alertaModal.classList.add("d-none"); }, 3000);
         return;
     }
-
-    if (!contrasenaActual || !nueva || !confirmar) {
-        mostrarAlerta("⚠️ Todos los campos son obligatorios.", "warning");
-        return;
-    }
-
-    // Verifica si la contraseña actual es correcta
-    if (usuarios[usuarioIndex].password !== contrasenaActual) {
-        mostrarAlerta("❌ La contraseña actual es incorrecta.", "danger");
-        return;
-    }
-
-    // Validar requisitos de la nueva contraseña
     if (nueva.length < 4 || !/(?=.*[A-Za-z])(?=.*\d)/.test(nueva)) {
-        mostrarAlerta("⚠️ La nueva contraseña debe tener al menos 4 caracteres, incluyendo una letra y un número.", "warning");
+        alertaModal.textContent = "La nueva contraseña debe tener al menos 4 caracteres, incluyendo una letra y un número.";
+        alertaModal.className = "alert alert-warning mt-3";
+        alertaModal.classList.remove("d-none");
+        setTimeout(() => { alertaModal.classList.add("d-none"); }, 3000);
         return;
     }
-
     if (nueva !== confirmar) {
-        mostrarAlerta("❌ Las contraseñas no coinciden.", "danger");
+        alertaModal.textContent = "Las contraseñas no coinciden.";
+        alertaModal.className = "alert alert-danger mt-3";
+        alertaModal.classList.remove("d-none");
+        setTimeout(() => { alertaModal.classList.add("d-none"); }, 3000);
         return;
     }
-
-    // Guardar la nueva contraseña
-    usuarios[usuarioIndex].password = nueva;
-    localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
-    // Mostrar mensaje de éxito
-    mostrarAlerta("✅ Contraseña cambiada correctamente.", "success");
-
-    // Limpiar los campos después de un cambio exitoso
-    document.getElementById("contrasenaActual").value = "";
-    document.getElementById("nuevaContrasenaActual").value = "";
-    document.getElementById("confirmarContrasenaActual").value = "";
+    let usuariosLS = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let idx = usuariosLS.findIndex(u => u.id === usuarioSeleccionadoGlobal.id);
+    if (idx === -1) {
+        alertaModal.textContent = "Usuario no encontrado.";
+        alertaModal.className = "alert alert-danger mt-3";
+        alertaModal.classList.remove("d-none");
+        setTimeout(() => { alertaModal.classList.add("d-none"); }, 3000);
+        return;
+    }
+    usuariosLS[idx].password = nueva;
+    localStorage.setItem("usuarios", JSON.stringify(usuariosLS));
+    alertaModal.textContent = "Contraseña cambiada correctamente.";
+    alertaModal.className = "alert alert-success mt-3";
+    alertaModal.classList.remove("d-none");
+    setTimeout(() => { alertaModal.classList.add("d-none"); }, 3000);
+    document.getElementById("nuevaContrasenaModal").value = "";
+    document.getElementById("confirmarContrasenaModal").value = "";
 }
 
-function mostrarAlertaModal(mensaje, tipo) {
-    const alerta = document.getElementById("alertaContrasena");
-    document.getElementById("formCambioContrasena").after(alerta);
-    
-    alerta.textContent = mensaje;
-    alerta.className = `alert alert-${tipo} mt-3`;
-    alerta.classList.remove("d-none");
-
-    setTimeout(() => {
-        alerta.classList.add("d-none");
-    }, 3000);
+// -----------------------
+// Funciones para la recuperación de contraseña (para la página recuperar.html)
+// -----------------------
+function handleRecovery(event) {
+    event.preventDefault();
+    const alertRecovery = document.getElementById("alertRecovery");
+    alertRecovery.classList.add("d-none");
+    alertRecovery.textContent = "";
+    const username = document.getElementById("username").value.trim();
+    const newPassword = document.getElementById("newPassword").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+    if (!username || !newPassword || !confirmPassword) {
+        mostrarAlertRecovery("Por favor, complete todos los campos.", "warning");
+        return;
+    }
+    if (newPassword.length < 4 || !/(?=.*[A-Za-z])(?=.*\d)/.test(newPassword)) {
+        mostrarAlertRecovery("La nueva contraseña debe tener al menos 4 caracteres, incluyendo una letra y un número.", "warning");
+        return;
+    }
+    if (newPassword !== confirmPassword) {
+        mostrarAlertRecovery("Las contraseñas no coinciden.", "danger");
+        return;
+    }
+    let usuariosLS = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let usuarioEncontrado = false;
+    for (const usuario of usuariosLS) {
+        if (usuario.username === username) {
+            usuario.password = newPassword;
+            usuarioEncontrado = true;
+            break;
+        }
+    }
+    if (usuarioEncontrado) {
+        localStorage.setItem("usuarios", JSON.stringify(usuariosLS));
+        mostrarAlertRecovery(`La contraseña del usuario "${username}" se ha actualizado correctamente.`, "success");
+        setTimeout(() => { window.location.href = "login.html"; }, 2000);
+    } else {
+        mostrarAlertRecovery("El nombre de usuario no existe. Por favor, inténtalo de nuevo.", "danger");
+    }
 }
 
-function ocultarAlertaModal() {
-    const alerta = document.getElementById("alertaContrasenaModal");
-    alerta.innerHTML = "";
-    alerta.classList.add("d-none");
+function mostrarAlertRecovery(mensaje, tipo) {
+    const alertRecovery = document.getElementById("alertRecovery");
+    alertRecovery.textContent = mensaje;
+    alertRecovery.className = `alert alert-${tipo} mt-3`;
+    alertRecovery.classList.remove("d-none");
 }
 
 function abrirChat() {
@@ -935,7 +1091,6 @@ function renderizarAverias() {
         listaAverias.appendChild(listItem);
     });
 
-    console.log("Averías renderizadas:", averias); // Debug en consola
 }
 
 function irAMaquina(maquina) {
@@ -1039,7 +1194,6 @@ function renderizarTareas() {
         listaTareas.appendChild(listItem);
     });
 
-    console.log("Tareas renderizadas correctamente:", tareas);
 }
 
 function mostrarUsuarioActual() {
@@ -1117,18 +1271,103 @@ function guardarSeguridadUsuario() {
     }
 }
 
-function forzarCambioContrasena() {
-    const usuarioSeleccionado = document.getElementById("seleccionarUsuario").value;
+function abrirModalPermisosUsuario(nombreUsuario) {
+    document.getElementById("nombreUsuarioPermisos").textContent = nombreUsuario;
+
     let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-    let usuarioIndex = usuarios.findIndex(u => u.username === usuarioSeleccionado);
+    let usuario = usuarios.find(u => u.nombre === nombreUsuario);
 
-    if (usuarioIndex !== -1) {
-        usuarios[usuarioIndex].cambioContrasenaRequerido = true;
-        localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
-        mostrarAlerta(`Se ha obligado a ${usuarios[usuarioIndex].nombre} a cambiar su contraseña.`, "warning");
+    if (!usuario) {
+        alert("Error: Usuario no encontrado.");
+        return;
     }
+
+    let permisosHTML = "";
+    
+    if (usuario.rol === "Operario") {
+        // Primero se muestran los checkbox de las máquinas
+        permisosHTML += '<h6>Selecciona las máquinas a las que tendrá acceso:</h6>';
+        let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
+        maquinas.forEach(maquina => {
+            let checked = "";
+            if (usuario.permisos && usuario.permisos.accesosMaquinas && usuario.permisos.accesosMaquinas.includes(maquina.id)) {
+                checked = "checked";
+            }
+            permisosHTML += `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="maquina-${maquina.id}" value="${maquina.id}" ${checked}>
+                <label class="form-check-label" for="maquina-${maquina.id}">${maquina.nombre}</label>
+            </div>`;
+        });
+        
+        // Se agrega el párrafo justo después de los checkbox de las máquinas
+        permisosHTML += `<br><h6>Selecciona si el usuario tendrá acceso a:</h6>`;
+        
+        // Finalmente, se agrega el checkbox para Notificar avería
+        permisosHTML += `
+        <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" id="notificarAveria" ${usuario.permisos && usuario.permisos.notificarAveria ? "checked" : ""}>
+            <label class="form-check-label" for="notificarAveria">Notificar avería</label>
+        </div>`;
+    } else {
+        // Para Administradores y Mecánicos se muestran los permisos tradicionales
+        permisosHTML = permisosDisponibles.map(permiso => `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="${permiso}" ${usuario.permisos && usuario.permisos[permiso] ? "checked" : ""}>
+                <label class="form-check-label" for="${permiso}">${permiso.replace("permiso", "").replace(/([A-Z])/g, ' $1')}</label>
+            </div>
+        `).join("");
+    }
+
+    document.getElementById("permisosUsuario").innerHTML = permisosHTML;
+
+    let modalInstance = new bootstrap.Modal(document.getElementById("modalPermisosUsuario"));
+    modalInstance.show();
 }
+
+
+function guardarPermisosUsuario() {
+    let nombreUsuario = document.getElementById("nombreUsuarioPermisos").textContent;
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let usuario = usuarios.find(u => u.nombre === nombreUsuario);
+
+    if (!usuario) {
+        alert("Error: Usuario no encontrado.");
+        return;
+    }
+
+    // Si el usuario es Operario, leeremos los accesos a máquinas y el checkbox de notificar avería
+    if (usuario.rol === "Operario") {
+        let accesosMaquinas = [];
+        let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
+        maquinas.forEach(maquina => {
+            const checkbox = document.getElementById(`maquina-${maquina.id}`);
+            if (checkbox && checkbox.checked) {
+                accesosMaquinas.push(maquina.id);
+            }
+        });
+        const notificarAveria = document.getElementById("notificarAveria").checked;
+        usuario.permisos = {
+            accesosMaquinas: accesosMaquinas,
+            notificarAveria: notificarAveria
+        };
+    } else {
+        // Para Administradores y Mecánicos se leen todos los checkbox mostrados
+        const nuevosPermisos = {};
+        document.querySelectorAll("#permisosUsuario .form-check-input").forEach(input => {
+            nuevosPermisos[input.id] = input.checked;
+        });
+        usuario.permisos = nuevosPermisos;
+    }
+
+    // Guardamos los cambios en localStorage
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+    alert(`Permisos actualizados para ${nombreUsuario}`);
+    let modalInstance = bootstrap.Modal.getInstance(document.getElementById("modalPermisosUsuario"));
+    modalInstance.hide();
+}
+
 
 function actualizarPermisos() {
     const rol = document.getElementById("nuevoRol").value;
@@ -1156,8 +1395,6 @@ function actualizarUsuarioSeleccionado() {
     let usuario = usuarios.find(u => u.id == usuarioSeleccionadoID);
 
     if (usuario) {
-        console.log("Usuario seleccionado:", usuario.nombre); // Depuración
-
         // Asegurar que los elementos existen antes de actualizar
         let usuarioCambio = document.getElementById("usuarioCambio");
         let usuarioForzar = document.getElementById("usuarioForzarCambio");
@@ -1185,21 +1422,53 @@ function actualizarUsuarioSeleccionado() {
 
 
 function guardarForzarCambio() {
-    let usuario = document.getElementById("seleccionarUsuario").value;
-    let forzar = document.getElementById("forzarCambioContrasena").checked;
-
-    if (!usuario) {
-        alert("Selecciona un usuario primero.");
+    // Usamos el usuario seleccionado global
+    if (!usuarioSeleccionadoGlobal) {
+        alert("No se ha seleccionado ningún usuario.");
         return;
     }
-
-    if (!forzar) {
-        alert("Debes seleccionar la casilla antes de confirmar.");
+    let usuariosLS = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let idx = usuariosLS.findIndex(u => u.id === usuarioSeleccionadoGlobal.id);
+    if (idx === -1) {
+        alert("Usuario no encontrado.");
         return;
     }
-
-    alert(`El usuario "${usuario}" ahora está obligado a cambiar su contraseña en el próximo inicio.`);
+    // Marcar el flag para forzar el cambio de contraseña
+    usuariosLS[idx].cambioContrasenaRequerido = true;
+    localStorage.setItem("usuarios", JSON.stringify(usuariosLS));
+    
+    // Cerrar el modal de forzar cambio
+    const modalElement = document.getElementById("modalForzarCambio");
+    let modalInstance = bootstrap.Modal.getInstance(modalElement);
+    if (modalInstance) {
+        modalInstance.hide();
+    } else {
+        // Si por alguna razón no se obtiene la instancia, se oculta manualmente
+        modalElement.classList.remove("show");
+        modalElement.style.display = "none";
+        document.body.classList.remove("modal-open");
+    }
+    
+    // Mostrar la alerta (usando la función mostrarAlerta definida en el script)
+    mostrarAlerta(`Se ha obligado a ${usuariosLS[idx].nombre} a cambiar su contraseña.`, "warning");
 }
+
+
+
+function prepararForzarCambio(nombreUsuario) {
+    // Busca el usuario en localStorage y actualiza la variable global
+    let usuariosLS = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let usuario = usuariosLS.find(u => u.nombre === nombreUsuario);
+    if (usuario) {
+        usuarioSeleccionadoGlobal = usuario;
+        console.log("Usuario seleccionado para forzar cambio:", usuario);
+    } else {
+        alert("Usuario no encontrado.");
+        return;
+    }
+    // No se ejecuta la acción, solo se abre el modal (ya lo hará data-bs-toggle)
+}
+
 
 function habilitarBotonConfirmar() {
     let checkbox = document.getElementById("forzarCambioContrasena");
@@ -1209,6 +1478,11 @@ function habilitarBotonConfirmar() {
 
 document.getElementById("forzarCambioContrasena").addEventListener("change", habilitarBotonConfirmar);
 
-
-
-
+function checkCambioContrasena() {
+    const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
+    if (usuarioActual && usuarioActual.cambioContrasenaRequerido) {
+        document.getElementById("usuarioCambio").textContent = usuarioActual.nombre;
+        let modalInstance = new bootstrap.Modal(document.getElementById("modalCambioContrasena"));
+        modalInstance.show();
+    }
+}

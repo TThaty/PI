@@ -78,7 +78,7 @@ h2 {
     list-style-type: none;
 }
 
-#listaAverias li, #listaTareas li, #listaUsuarios li, #listaMaquinas li {
+#listaAverias li, #listaTareas li, #listaUsuarios li, #listaMaquinas li, #listaUsuariosGestionSeguridad li {
     background-color: #fff;
     margin: 10px 0;
     padding: 15px;
@@ -87,7 +87,7 @@ h2 {
     transition: all 0.3s ease;
 }
 
-#listaAverias li:hover, #listaTareas li:hover, #listaUsuarios li:hover, #listaMaquinas li:hover {
+#listaAverias li:hover, #listaTareas li:hover, #listaUsuarios li:hover, #listaMaquinas li:hover, #listaUsuariosGestionSeguridad li:hover {
     transform: translateY(-3px) scale(1.02);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
@@ -204,7 +204,7 @@ button:disabled {
     width: 60%;
 }
 
-#listaUsuarios {
+#listaUsuarios, #listaUsuariosGestionSeguridad {
     list-style: none;
     padding: 0;
 }
