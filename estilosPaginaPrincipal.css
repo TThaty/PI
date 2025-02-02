@@ -23,10 +23,31 @@ header {
     position: relative;
 }
 
-/* Estilo del logo */
-.header-logo {
+.header-container {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.header-logo {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.header-content {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.header-logo img {
+    height: 40px; /* Ajusta el tamaño del logo */
+    width: auto;
 }
 
 /* Estilo del contenido centrado */
@@ -210,4 +231,11 @@ footer {
     padding: 15px;
     border-radius: 10px; /* Bordes redondeados */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra alrededor */
+}
+
+nav .dropdown-menu a:hover, 
+nav .dropdown-menu a.active {
+    background: none !important;
+    box-shadow: none !important;
+    transform: none !important;
 }

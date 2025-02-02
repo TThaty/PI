@@ -106,7 +106,8 @@ const maquinas = [
         modelo: "Caterpillar X3",
         fechaMantenimiento: "2023-12-01",
         realizadoPor: "Juan Pérez",
-        estado: "Funcionando"
+        estado: "Funcionando",
+        imagen: "img/excavadora3000.jpg"
     },
     {
         id: 2,
@@ -116,7 +117,8 @@ const maquinas = [
         modelo: "Liebherr LTM",
         fechaMantenimiento: "2023-11-15",
         realizadoPor: "Ana López",
-        estado: "Averiada"
+        estado: "Averiada",
+        imagen: "img/gruaIndustrial.jpg"
     },
     {
         id: 3,
@@ -126,10 +128,13 @@ const maquinas = [
         modelo: "Caterpillar X2",
         fechaMantenimiento: "2023-12-01",
         realizadoPor: "Juan Pérez",
-        estado: "Funcionando"
+        estado: "Funcionando",
+        imagen: "img/excavadora2500.jpg"
     }
 ];
+
 let maquinaEditandoId = null;
+
 let nextId = maquinas.length ? Math.max(...maquinas.map(m => m.id)) + 1 : 1;
 if (!localStorage.getItem("maquinas")) {
     localStorage.setItem("maquinas", JSON.stringify(maquinas));
@@ -771,7 +776,7 @@ function renderizarMaquinas() {
                 - Fecha Último Mantenimiento: ${maquina.fechaMantenimiento}<br>
                 - Realizado por: ${maquina.realizadoPor}
                 <br><br>
-                <button class="btn btn-primary" onclick="mostrarImagen('${maquina.imagen}')">Mostrar Imagen</button>
+                <button class="btn btn-primary" onclick="mostrarImagen(${maquina.id}, '${maquina.imagen}')">Mostrar Imagen</button>
                 <button class="btn btn-primary" onclick="editarMaquina(${maquina.id})">Editar Detalles</button>
                 <button id="botonBaja" class="btn btn-danger" onclick="darBajaMaquina('${maquina.nombre}')">Dar de Baja</button>
             </div>
@@ -780,11 +785,44 @@ function renderizarMaquinas() {
     });
 }
 
-function mostrarImagen(imagenBase64) {
+let maquinaSeleccionada = null;
+
+function mostrarImagen(id, imagenBase64) {
+    let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
+    let maquina = maquinas.find(m => m.id === id);
+
+    if (!maquina || !maquina.imagen) {
+        alert("No hay imagen disponible para esta máquina.");
+        return;
+    }
+
+    maquinaSeleccionada = id;
+
     document.getElementById("imagenModal").src = imagenBase64;
     let modalInstance = new bootstrap.Modal(document.getElementById("modalImagen"));
     modalInstance.show();
 }
+
+function borrarImagen() {
+    if (!maquinaSeleccionada) {
+        alert("No hay una imagen seleccionada.");
+        return;
+    }
+
+    let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
+    let index = maquinas.findIndex(m => m.id === maquinaSeleccionada);
+
+    if (index !== -1) {
+        maquinas[index].imagen = ""; // Eliminar la imagen
+        localStorage.setItem("maquinas", JSON.stringify(maquinas)); // Guardar cambios en localStorage
+        alert("Imagen eliminada correctamente.");
+    }
+
+    maquinaSeleccionada = null; // Resetear variable
+    let modalInstance = bootstrap.Modal.getInstance(document.getElementById("modalImagen"));
+    modalInstance.hide();
+}
+
 
 function editarMaquina(id) {
     let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
@@ -1047,15 +1085,92 @@ function mostrarMenu() {
                 <a href="tareas.html" target="_self">Gestión de Tareas</a>
                 <a href="usuarios.html" target="_self">Gestión de Usuarios</a>
                 <a href="seguridad.html" target="_self">Gestión de Seguridad</a>
-                <a href="#" onclick="cerrarSesion()" title="Cerrar sesión">
-                    <img src="img/log-out.png" alt="Cerrar sesión" style="width: 30px; height: 30px; filter: invert(1);">
-                </a>
+                <div class="dropdown ms-auto">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="img/log-out.png" alt="Cerrar sesión" style="width: 30px; height: 30px; filter: invert(1);">
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#" onclick="abrirModalCambioContrasena()">Cambiar Contraseña</a></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li>
+                    </ul>
+                </div>
             </ul>
         </nav>
+
+        <!-- Modal Cambio de Contraseña -->
+        <div class="modal fade" id="modalCambioContrasena" tabindex="-1" aria-labelledby="modalCambioContrasenaLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalCambioContrasenaLabel">Cambiar Contraseña</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formCambioContrasena">
+                            <div class="mb-3">
+                                <label for="nuevaContrasena" class="form-label">Nueva Contraseña</label>
+                                <input type="password" class="form-control" id="nuevaContrasena" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmarContrasena" class="form-label">Confirmar Nueva Contraseña</label>
+                                <input type="password" class="form-control" id="confirmarContrasena" required>
+                            </div>
+                            <div id="alertaCambio" class="alert d-none"></div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="guardarCambioContrasena()">Guardar Contraseña</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     `;
 
     // Insertar el menú en el lugar donde queremos mostrarlo
     document.getElementById("menu-container").innerHTML = menuHTML;
+}
+
+function guardarCambioContrasena() {
+    const nuevaContrasena = document.getElementById("nuevaContrasena").value.trim();
+    const confirmarContrasena = document.getElementById("confirmarContrasena").value.trim();
+    const alertaCambio = document.getElementById("alertaCambio");
+
+    if (nuevaContrasena.length < 4 || !/(?=.*[A-Za-z])(?=.*\d)/.test(nuevaContrasena)) {
+        alertaCambio.textContent = "La contraseña debe tener al menos 4 caracteres, incluyendo una letra y un número.";
+        alertaCambio.className = "alert alert-warning mt-3";
+        alertaCambio.classList.remove("d-none");
+        return;
+    }
+
+    if (nuevaContrasena !== confirmarContrasena) {
+        alertaCambio.textContent = "Las contraseñas no coinciden.";
+        alertaCambio.className = "alert alert-danger mt-3";
+        alertaCambio.classList.remove("d-none");
+        return;
+    }
+
+    let usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
+    let usuariosLS = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let idx = usuariosLS.findIndex(u => u.username === usuarioActual.username);
+
+    if (idx !== -1) {
+        usuariosLS[idx].password = nuevaContrasena;
+        localStorage.setItem("usuarios", JSON.stringify(usuariosLS));
+
+        // Cerrar modal
+        let modalInstance = bootstrap.Modal.getInstance(document.getElementById("modalCambioContrasena"));
+        modalInstance.hide();
+
+        // Mensaje de confirmación
+        alert("Contraseña cambiada correctamente.");
+    }
+}
+
+function abrirModalCambioContrasena() {
+    let modalInstance = new bootstrap.Modal(document.getElementById("modalCambioContrasena"));
+    modalInstance.show();
 }
 
 function renderizarAverias() {

@@ -58,6 +58,13 @@ nav a:hover, nav a.active {
     transform: scale(1.05);
 }
 
+nav .dropdown-menu a:hover, 
+nav .dropdown-menu a.active {
+    background: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
 
 /* Estilos para el contenedor principal */
 main {
