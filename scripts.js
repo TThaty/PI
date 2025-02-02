@@ -47,6 +47,7 @@ const maquinas = [
         },
     ];
 
+let maquinaEditandoId = null;
 let nextId = maquinas.length ? Math.max(...maquinas.map(maquina => maquina.id)) + 1 : 1;
 
 if (!localStorage.getItem("maquinas")) {
@@ -306,66 +307,6 @@ function abrirFormularioRol(usuario) {
         </form>
     `;
     abrirModal("Asignar Rol", contenido);
-}
-
-function abrirFormularioAltaMaquina() {
-    document.getElementById("modalDinamicoLabel").textContent = "Dar de Alta Máquina";
-    document.getElementById("contenidoModal").innerHTML = `
-        <h5 class="mb-3">Datos de la Nueva Máquina</h5>
-        <form id="formAltaMaquina">
-            <div class="mb-3">
-                <label for="nombreAlta" class="form-label">Nombre:</label>
-                <input type="text" id="nombreAlta" class="form-control" placeholder="Nombre de la máquina" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="tipoMaquina" class="form-label">Tipo:</label>
-                <input type="text" id="tipoMaquina" class="form-control" placeholder="Tipo de máquina" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="trabajoMaquina" class="form-label">Trabajo:</label>
-                <input type="text" id="trabajoMaquina" class="form-control" placeholder="Tipo de trabajo" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="modeloMaquina" class="form-label">Modelo/Marca:</label>
-                <input type="text" id="modeloMaquina" class="form-control" placeholder="Modelo o marca" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="fechaMantenimiento" class="form-label">Fecha Último Mantenimiento:</label>
-                <input type="date" id="fechaMantenimiento" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="realizadoPor" class="form-label">Realizado por:</label>
-                <input type="text" id="realizadoPor" class="form-control" placeholder="Nombre del responsable" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="estadoAlta" class="form-label">Estado:</label>
-                <select id="estadoAlta" class="form-select" required>
-                    <option value="Funcionando">Funcionando</option>
-                    <option value="Averiada">Averiada</option>
-                </select>
-            </div>
-
-            <div class="d-flex justify-content-between">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="darAltaMaquina()">Guardar</button>
-            </div>
-        </form>
-    `;
-
-    let modalElement = document.getElementById("modalDinamico");
-    let modalInstance = bootstrap.Modal.getInstance(modalElement);
-
-    if (!modalInstance) {
-        modalInstance = new bootstrap.Modal(modalElement);
-    }
-
-    modalInstance.show();
 }
 
 
@@ -666,6 +607,7 @@ function renderizarMaquinas() {
                     </small>
                 </div>
             </div>
+            
             <div class="maquina-detalles" id="detalles-${maquina.id}">
                 - Tipo: ${maquina.tipo}<br>
                 - Trabajo: ${maquina.trabajo}<br>
@@ -673,11 +615,33 @@ function renderizarMaquinas() {
                 - Fecha Último Mantenimiento: ${maquina.fechaMantenimiento}<br>
                 - Realizado por: ${maquina.realizadoPor}
                 <br><br>
+                <button class="btn btn-primary" onclick="mostrarImagen('${maquina.imagen}')">Mostrar Imagen</button>
+                <button class="btn btn-primary" onclick="editarMaquina(${maquina.id})">Editar Detalles</button>
                 <button id="botonBaja" class="btn btn-danger" onclick="darBajaMaquina('${maquina.nombre}')">Dar de Baja</button>
             </div>
         `;
         lista.appendChild(li);
     });
+}
+
+function mostrarImagen(imagenBase64) {
+    document.getElementById("imagenModal").src = imagenBase64;
+    let modalInstance = new bootstrap.Modal(document.getElementById("modalImagen"));
+    modalInstance.show();
+}
+
+function editarMaquina(id) {
+    let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
+    let maquina = maquinas.find(m => m.id === id);
+
+    abrirFormularioAltaMaquina(id);
+    document.getElementById("nombreAlta").value = maquina.nombre;
+    document.getElementById("tipoMaquina").value = maquina.tipo;
+    document.getElementById("trabajoMaquina").value = maquina.trabajo;
+    document.getElementById("modeloMaquina").value = maquina.modelo;
+    document.getElementById("fechaMantenimiento").value = maquina.fechaMantenimiento;
+    document.getElementById("realizadoPor").value = maquina.realizadoPor;
+    document.getElementById("estadoAlta").value = maquina.estado;
 }
 
 function filtrarMaquinas() {
@@ -694,7 +658,12 @@ function toggleMaquina(id) {
     detalles.classList.toggle("activo");
 }
 
-function abrirFormularioAltaMaquina() {
+function abrirFormularioAltaMaquina(id = null) {
+    let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
+    let maquina = id ? maquinas.find(m => m.id === id) : null;
+
+    maquinaEditandoId = id;
+
     let modalElement = document.getElementById("modalDinamico");
     
     if (!modalElement) {
@@ -713,46 +682,108 @@ function abrirFormularioAltaMaquina() {
 
             <div class="mb-3">
                 <label for="tipoMaquina" class="form-label">Tipo:</label>
-                <input type="text" id="tipoMaquina" class="form-control" placeholder="Tipo de máquina" required>
+                <input type="text" id="tipoMaquina" class="form-control" placeholder="Tipo de máquina" required value="${maquina ? maquina.tipo : ''}">
             </div>
 
             <div class="mb-3">
                 <label for="trabajoMaquina" class="form-label">Trabajo:</label>
-                <input type="text" id="trabajoMaquina" class="form-control" placeholder="Tipo de trabajo" required>
+                <input type="text" id="trabajoMaquina" class="form-control" placeholder="Tipo de trabajo" required value="${maquina ? maquina.trabajo : ''}">
             </div>
 
             <div class="mb-3">
                 <label for="modeloMaquina" class="form-label">Modelo/Marca:</label>
-                <input type="text" id="modeloMaquina" class="form-control" placeholder="Modelo o marca" required>
+                <input type="text" id="modeloMaquina" class="form-control" placeholder="Modelo o marca" required value="${maquina ? maquina.modelo : ''}">
             </div>
 
             <div class="mb-3">
                 <label for="fechaMantenimiento" class="form-label">Fecha Último Mantenimiento:</label>
-                <input type="date" id="fechaMantenimiento" class="form-control" required>
+                <input type="date" id="fechaMantenimiento" class="form-control" required value="${maquina ? maquina.fechaMantenimiento : ''}">
             </div>
 
             <div class="mb-3">
                 <label for="realizadoPor" class="form-label">Realizado por:</label>
-                <input type="text" id="realizadoPor" class="form-control" placeholder="Nombre del responsable" required>
+                <input type="text" id="realizadoPor" class="form-control" placeholder="Nombre del responsable" required value="${maquina ? maquina.realizadoPor : ''}">
             </div>
-
+            
             <div class="mb-3">
                 <label for="estadoAlta" class="form-label">Estado:</label>
                 <select id="estadoAlta" class="form-select" required>
-                    <option value="Funcionando">Funcionando</option>
-                    <option value="Averiada">Averiada</option>
+                    <option value="Funcionando" ${maquina && maquina.estado === "Funcionando" ? "selected" : ""}>Funcionando</option>
+                    <option value="Averiada" ${maquina && maquina.estado === "Averiada" ? "selected" : ""}>Averiada</option>
                 </select>
             </div>
 
+            <div class="mb-3">
+                <label for="imagenMaquina" class="form-label">Imagen:</label>
+                <input type="file" id="imagenMaquina" class="form-control" accept="image/*" onchange="convertirImagenBase64(this)">
+                <input type="hidden" id="imagenBase64" value="${maquina && maquina.imagen ? maquina.imagen : ''}">
+            </div>
+            <input type="hidden" id="imagenBase64">
+
             <div class="d-flex justify-content-between">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="darAltaMaquina()">Guardar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarMaquina()">Guardar</button>
             </div>
         </form>
     `;
 
     let modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
     modalInstance.show();
+}
+
+function guardarMaquina() {
+    let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
+
+    const nombre = document.getElementById("nombreAlta").value.trim();
+    const tipo = document.getElementById("tipoMaquina").value.trim();
+    const trabajo = document.getElementById("trabajoMaquina").value.trim();
+    const modelo = document.getElementById("modeloMaquina").value.trim();
+    const fechaMantenimiento = document.getElementById("fechaMantenimiento").value;
+    const realizadoPor = document.getElementById("realizadoPor").value.trim();
+    const estado = document.getElementById("estadoAlta").value;
+    const imagenBase64 = document.getElementById("imagenBase64").value; // Imagen cargada
+
+    if (!nombre || !tipo || !trabajo || !modelo || !realizadoPor) {
+        mostrarAlerta("Completa todos los campos.", "danger");
+        return;
+    }
+
+    if (maquinaEditandoId !== null) {
+        let maquina = maquinas.find(m => m.id === maquinaEditandoId);
+        if (maquina) {
+            maquina.nombre = nombre;
+            maquina.tipo = tipo;
+            maquina.trabajo = trabajo;
+            maquina.modelo = modelo;
+            maquina.fechaMantenimiento = fechaMantenimiento;
+            maquina.realizadoPor = realizadoPor;
+            maquina.estado = estado;
+            if (imagenBase64) {
+                maquina.imagen = imagenBase64;
+            }
+        }
+    } else {
+        maquinas.push({
+            id: maquinas.length ? Math.max(...maquinas.map(m => m.id)) + 1 : 1,
+            nombre, tipo, trabajo, modelo, fechaMantenimiento, realizadoPor, estado, imagen: imagenBase64
+        });
+    }
+
+    localStorage.setItem("maquinas", JSON.stringify(maquinas));
+    maquinaEditandoId = null; // Resetear variable de edición
+    renderizarMaquinas();
+    cerrarModal();
+}
+
+function convertirImagenBase64(input) {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            document.getElementById("imagenBase64").value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
 function darBajaMaquina(maquinaNombre) {
@@ -821,6 +852,7 @@ function darAltaMaquina() {
     const fechaMantenimiento = document.getElementById("fechaMantenimiento").value;
     const realizadoPor = document.getElementById("realizadoPor").value.trim();
     const estado = document.getElementById("estadoAlta").value;
+    const imagenBase64 = document.getElementById("imagenBase64").value;
 
     if (!nombre || !tipo || !trabajo || !modelo || !realizadoPor) {
         mostrarAlerta("Por favor, completa todos los campos obligatorios.", "danger");
@@ -830,14 +862,15 @@ function darAltaMaquina() {
     let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
 
     const nuevaMaquina = {
-        id: maquinas.length ? Math.max(...maquinas.map(m => m.id)) + 1 : 1, // Generar ID único
+        id: maquinas.length ? Math.max(...maquinas.map(m => m.id)) + 1 : 1, 
         nombre,
         tipo,
         trabajo,
         modelo,
         fechaMantenimiento,
         realizadoPor,
-        estado
+        estado,
+        imagen: imagenBase64
     };
 
     maquinas.push(nuevaMaquina);
