@@ -57,6 +57,26 @@ header {
     justify-content: center;
 }
 
+/* Botón de cambio de idioma */
+#languageToggle {
+    position: absolute;
+    top: 5px;
+    right: 20px;
+    padding: 8px 15px;
+    background: linear-gradient(135deg, #50c5ff, #50c5ff);
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+#languageToggle:hover {
+    background: linear-gradient(135deg, #ffffff, #ffffff);
+    transform: scale(1.05);
+}
+
 /* Ajuste del icono de cerrar sesión */
 .logout-icon {
     display: flex;

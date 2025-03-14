@@ -200,21 +200,45 @@ document.addEventListener("DOMContentLoaded", function () {
 // Funciones de calendario (si se usan)
 // -----------------------
 function renderCalendar() {
+    const isSpanish = localStorage.getItem('language') === 'es' || !localStorage.getItem('language');
+
+    const monthNames = isSpanish 
+        ? ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+           "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+        : ["January", "February", "March", "April", "May", "June",
+           "July", "August", "September", "October", "November", "December"];
+
+    const dayNames = isSpanish 
+        ? ["D", "L", "M", "X", "J", "V", "S"]
+        : ["S", "M", "T", "W", "T", "F", "S"];
+
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    const monthNames = [
-        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-    ];
+
     calendarTitle.textContent = `${monthNames[month]} ${year}`;
+
+    // Renderizar encabezado de días de la semana
+    const calendarHead = document.querySelector("#calendar thead tr");
+    calendarHead.innerHTML = dayNames.map(day => `<th>${day}</th>`).join('');
+
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
+
     calendarBody.innerHTML = "";
     let row = document.createElement('tr');
+
+    // Rellenar los días previos al inicio del mes
+    for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('td');
+        row.appendChild(emptyCell);
+    }
+
     for (let day = 1; day <= daysInMonth; day++) {
         const cell = document.createElement('td');
         cell.textContent = day;
         row.appendChild(cell);
+
+        // Si es sábado o último día del mes, agregar fila al calendario
         if ((firstDay + day - 1) % 7 === 6 || day === daysInMonth) {
             calendarBody.appendChild(row);
             row = document.createElement('tr');
@@ -249,25 +273,6 @@ function cerrarSesion() {
     localStorage.removeItem("usuarioActual");
     localStorage.removeItem("tokenSesion");
     setTimeout(() => { window.location.replace("login.html"); }, 100);
-}
-
-function mostrarMenu() {
-    const menuHTML = `
-        <nav class="d-flex justify-content-center">
-            <ul class="nav">
-                <a href="pagina-principal.html" target="_self">Página principal</a>
-                <a href="maquinas.html" target="_self">Gestión de Máquinas</a>
-                <a href="averias.html" target="_self">Gestión de Averías</a>
-                <a href="tareas.html" target="_self">Gestión de Tareas</a>
-                <a href="usuarios.html" target="_self">Gestión de Usuarios</a>
-                <a href="seguridad.html" target="_self">Gestión de Seguridad</a>
-                <a href="#" onclick="cerrarSesion()" title="Cerrar sesión">
-                    <img src="img/log-out.png" alt="Cerrar sesión" style="width: 30px; height: 30px; filter: invert(1);">
-                </a>
-            </ul>
-        </nav>
-    `;
-    document.getElementById("menu-container").innerHTML = menuHTML;
 }
 
 function mostrarUsuarioActual() {
@@ -814,6 +819,39 @@ function enviarMensaje() {
 
 function renderizarMaquinas() {
     const lista = document.getElementById("listaMaquinas");
+    const isSpanish = localStorage.getItem('language') === 'es' || !localStorage.getItem('language');
+
+    // Traducciones
+    const translations = {
+        es: {
+            tipo: "Tipo",
+            trabajo: "Trabajo",
+            modelo: "Modelo/Marca",
+            fechaMantenimiento: "Fecha Último Mantenimiento",
+            realizadoPor: "Realizado por",
+            estado: "Estado",
+            funcionando: "Funcionando",
+            averiada: "Averiada",
+            mostrarImagen: "Mostrar Imagen",
+            editarDetalles: "Editar Detalles",
+            darDeBaja: "Dar de Baja"
+        },
+        en: {
+            tipo: "Type",
+            trabajo: "Work",
+            modelo: "Model/Brand",
+            fechaMantenimiento: "Last Maintenance Date",
+            realizadoPor: "Performed by",
+            estado: "Status",
+            funcionando: "Working",
+            averiada: "Broken",
+            mostrarImagen: "Show Image",
+            editarDetalles: "Edit Details",
+            darDeBaja: "Deactivate"
+        }
+    };
+
+    const lang = isSpanish ? translations.es : translations.en;
 
     // Obtener las máquinas desde localStorage o inicializar con un array vacío
     let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
@@ -827,21 +865,21 @@ function renderizarMaquinas() {
                 <strong>${maquina.nombre}</strong>
                 <div class="d-flex align-items-center">
                     <small id="estadoEtiqueta-${maquina.id}" class="px-2 py-1 fw-semibold ${maquina.estado.toLowerCase() === 'funcionando' ? 'text-success-emphasis bg-success-subtle border border-success-subtle' : 'text-danger-emphasis bg-danger-subtle border border-danger-subtle'} rounded-2">
-                        ${maquina.estado}
+                        ${maquina.estado === "Funcionando" ? lang.funcionando : lang.averiada}
                     </small>
                 </div>
             </div>
             
             <div class="maquina-detalles" id="detalles-${maquina.id}">
-                - Tipo: ${maquina.tipo}<br>
-                - Trabajo: ${maquina.trabajo}<br>
-                - Modelo/Marca: ${maquina.modelo}<br>
-                - Fecha Último Mantenimiento: ${maquina.fechaMantenimiento}<br>
-                - Realizado por: ${maquina.realizadoPor}
+                - ${lang.tipo}: ${maquina.tipo}<br>
+                - ${lang.trabajo}: ${maquina.trabajo}<br>
+                - ${lang.modelo}: ${maquina.modelo}<br>
+                - ${lang.fechaMantenimiento}: ${maquina.fechaMantenimiento}<br>
+                - ${lang.realizadoPor}: ${maquina.realizadoPor}
                 <br><br>
-                <button class="btn btn-primary" onclick="mostrarImagen(${maquina.id}, '${maquina.imagen}')">Mostrar Imagen</button>
-                <button class="btn btn-primary" onclick="editarMaquina(${maquina.id})">Editar Detalles</button>
-                <button id="botonBaja" class="btn btn-danger" onclick="darBajaMaquina('${maquina.nombre}')">Dar de Baja</button>
+                <button class="btn btn-primary" onclick="mostrarImagen(${maquina.id}, '${maquina.imagen}')">${lang.mostrarImagen}</button>
+                <button class="btn btn-primary" onclick="editarMaquina(${maquina.id})">${lang.editarDetalles}</button>
+                <button id="botonBaja" class="btn btn-danger" onclick="darBajaMaquina('${maquina.nombre}')">${lang.darDeBaja}</button>
             </div>
         `;
         lista.appendChild(li);
@@ -928,58 +966,74 @@ function abrirFormularioAltaMaquina(id = null) {
         return;
     }
 
-    document.getElementById("modalDinamicoLabel").textContent = "Dar de Alta Máquina";
+    // Títulos y contenido que se traducen dinámicamente
+    let modalTitle = isSpanish ? "Dar de Alta Máquina" : "Add New Machine";
+    let formTitle = isSpanish ? "Datos de la Nueva Máquina" : "New Machine Data";
+    let nameLabel = isSpanish ? "Nombre:" : "Name:";
+    let typeLabel = isSpanish ? "Tipo:" : "Type:";
+    let workLabel = isSpanish ? "Trabajo:" : "Job:";
+    let modelLabel = isSpanish ? "Modelo/Marca:" : "Model/Brand:";
+    let maintenanceDateLabel = isSpanish ? "Fecha Último Mantenimiento:" : "Last Maintenance Date:";
+    let performedByLabel = isSpanish ? "Realizado por:" : "Performed by:";
+    let statusLabel = isSpanish ? "Estado:" : "Status:";
+    let workingOption = isSpanish ? "Funcionando" : "Working";
+    let brokenOption = isSpanish ? "Averiada" : "Broken";
+    let imageLabel = isSpanish ? "Imagen:" : "Image:";
+    let cancelButton = isSpanish ? "Cancelar" : "Cancel";
+    let saveButton = isSpanish ? "Guardar" : "Save";
+
+    document.getElementById("modalDinamicoLabel").textContent = modalTitle;
     document.getElementById("contenidoModal").innerHTML = `
-        <h5 class="mb-3">Datos de la Nueva Máquina</h5>
+        <h5 class="mb-3">${formTitle}</h5>
         <form id="formAltaMaquina">
             <div class="mb-3">
-                <label for="nombreAlta" class="form-label">Nombre:</label>
-                <input type="text" id="nombreAlta" class="form-control" placeholder="Nombre de la máquina" required>
+                <label for="nombreAlta" class="form-label">${nameLabel}</label>
+                <input type="text" id="nombreAlta" class="form-control" placeholder="${isSpanish ? 'Nombre de la máquina' : 'Machine name'}" required>
             </div>
 
             <div class="mb-3">
-                <label for="tipoMaquina" class="form-label">Tipo:</label>
-                <input type="text" id="tipoMaquina" class="form-control" placeholder="Tipo de máquina" required value="${maquina ? maquina.tipo : ''}">
+                <label for="tipoMaquina" class="form-label">${typeLabel}</label>
+                <input type="text" id="tipoMaquina" class="form-control" placeholder="${isSpanish ? 'Tipo de máquina' : 'Machine type'}" required value="${maquina ? maquina.tipo : ''}">
             </div>
 
             <div class="mb-3">
-                <label for="trabajoMaquina" class="form-label">Trabajo:</label>
-                <input type="text" id="trabajoMaquina" class="form-control" placeholder="Tipo de trabajo" required value="${maquina ? maquina.trabajo : ''}">
+                <label for="trabajoMaquina" class="form-label">${workLabel}</label>
+                <input type="text" id="trabajoMaquina" class="form-control" placeholder="${isSpanish ? 'Tipo de trabajo' : 'Type of job'}" required value="${maquina ? maquina.trabajo : ''}">
             </div>
 
             <div class="mb-3">
-                <label for="modeloMaquina" class="form-label">Modelo/Marca:</label>
-                <input type="text" id="modeloMaquina" class="form-control" placeholder="Modelo o marca" required value="${maquina ? maquina.modelo : ''}">
+                <label for="modeloMaquina" class="form-label">${modelLabel}</label>
+                <input type="text" id="modeloMaquina" class="form-control" placeholder="${isSpanish ? 'Modelo o marca' : 'Model or brand'}" required value="${maquina ? maquina.modelo : ''}">
             </div>
 
             <div class="mb-3">
-                <label for="fechaMantenimiento" class="form-label">Fecha Último Mantenimiento:</label>
+                <label for="fechaMantenimiento" class="form-label">${maintenanceDateLabel}</label>
                 <input type="date" id="fechaMantenimiento" class="form-control" required value="${maquina ? maquina.fechaMantenimiento : ''}">
             </div>
 
             <div class="mb-3">
-                <label for="realizadoPor" class="form-label">Realizado por:</label>
-                <input type="text" id="realizadoPor" class="form-control" placeholder="Nombre del responsable" required value="${maquina ? maquina.realizadoPor : ''}">
+                <label for="realizadoPor" class="form-label">${performedByLabel}</label>
+                <input type="text" id="realizadoPor" class="form-control" placeholder="${isSpanish ? 'Nombre del responsable' : 'Name of person responsible'}" required value="${maquina ? maquina.realizadoPor : ''}">
             </div>
             
             <div class="mb-3">
-                <label for="estadoAlta" class="form-label">Estado:</label>
+                <label for="estadoAlta" class="form-label">${statusLabel}</label>
                 <select id="estadoAlta" class="form-select" required>
-                    <option value="Funcionando" ${maquina && maquina.estado === "Funcionando" ? "selected" : ""}>Funcionando</option>
-                    <option value="Averiada" ${maquina && maquina.estado === "Averiada" ? "selected" : ""}>Averiada</option>
+                    <option value="Funcionando" ${maquina && maquina.estado === "Funcionando" ? "selected" : ""}>${workingOption}</option>
+                    <option value="Averiada" ${maquina && maquina.estado === "Averiada" ? "selected" : ""}>${brokenOption}</option>
                 </select>
             </div>
 
             <div class="mb-3">
-                <label for="imagenMaquina" class="form-label">Imagen:</label>
+                <label for="imagenMaquina" class="form-label">${imageLabel}</label>
                 <input type="file" id="imagenMaquina" class="form-control" accept="image/*" onchange="convertirImagenBase64(this)">
                 <input type="hidden" id="imagenBase64" value="${maquina && maquina.imagen ? maquina.imagen : ''}">
             </div>
             <input type="hidden" id="imagenBase64">
 
             <div class="d-flex justify-content-between">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="guardarMaquina()">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${cancelButton}</button>
+                <button type="button" class="btn btn-primary" onclick="guardarMaquina()">${saveButton}</button>
             </div>
         </form>
     `;

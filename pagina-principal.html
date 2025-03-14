@@ -57,6 +57,7 @@
                         <li><a class="dropdown-item text-danger" href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li>
                     </ul>
                 </div>
+                <button id="languageToggle" class="btn">English</button>
                 </ul>
             </nav>
         </div>
@@ -67,11 +68,11 @@
                 <!-- Lateral izquierdo -->
                 <aside class="col-2 left-aside">
                     <img src="img/icono persona.webp" alt="Imagen ejemplo">
-                    <p><b>Nombre:</b><br>
+                    <p><b id="label-nombre">Nombre:</b><br>
                         Juan Perez<br>
-                        <b>Nombre de usuario:</b><br>
+                        <b id="label-username">Nombre de usuario:</b><br>
                         Juanpe<br>
-                        <b>Email:</b><br>
+                        <b id="label-email">Email:</b><br>
                         juampe.ejemplo@ejemplo.com
                     </p>
                 </aside>
@@ -84,44 +85,44 @@
                     </section>
         
                     <section id="tasks" class="mb-5">
-                        <h2 class="mb-3">Lista de Tareas</h2>
+                        <h2 class="mb-3" id="tasks-title">Lista de Tareas</h2>
                     
                         <!-- Tarea Fácil -->
                         <div class="task green d-flex flex-column" data-bs-toggle="collapse" data-bs-target="#task1">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span>Tarea Fácil</span>
+                                <span id="task-easy">Tarea Fácil</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down icon" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                                 </svg>
                             </div>
                             <div id="task1" class="collapse mt-2">
-                                <p>Detalles o pasos para completar esta tarea.</p>
+                                <p id="details-easy">Detalles o pasos para completar esta tarea.</p>
                             </div>
                         </div>
                     
                         <!-- Tarea Moderada -->
                         <div class="task yellow d-flex flex-column" data-bs-toggle="collapse" data-bs-target="#task2">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span>Tarea Moderada</span>
+                                <span id="task-medium">Tarea Moderada</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down icon" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                                 </svg>
                             </div>
                             <div id="task2" class="collapse mt-2">
-                                <p>Detalles o pasos para completar esta tarea.</p>
+                                <p id="details-medium">Detalles o pasos para completar esta tarea.</p>
                             </div>
                         </div>
                     
                         <!-- Tarea Difícil -->
                         <div class="task red d-flex flex-column" data-bs-toggle="collapse" data-bs-target="#task3">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span>Tarea Difícil</span>
+                                <span id="task-hard">Tarea Difícil</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down icon" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                                 </svg>
                             </div>
                             <div id="task3" class="collapse mt-2">
-                                <p>Detalles o pasos para completar esta tarea.</p>
+                                <p id="details-hard">Detalles o pasos para completar esta tarea.</p>
                             </div>
                         </div>
                     
@@ -191,6 +192,93 @@
     </footer>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="scripts.js"></script>
+    <script>
+        let isSpanish = localStorage.getItem('language') === 'es' || !localStorage.getItem('language');
+
+        // Ejecutar traducción al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            setupLanguageToggle();
+            translateContent();
+            renderCalendar();
+        });
+
+        // Configurar el botón de cambio de idioma
+        function setupLanguageToggle() {
+            const languageToggle = document.getElementById('languageToggle');
+            languageToggle.textContent = isSpanish ? 'English' : 'Español';
+            languageToggle.addEventListener('click', () => {
+                isSpanish = !isSpanish;
+                localStorage.setItem('language', isSpanish ? 'es' : 'en');
+                translateContent();
+            });
+        }
+
+        // Función para traducir todo el contenido
+        function translateContent() {
+            // Traducción del título y secciones principales
+            const pageTitle = document.querySelector('title');
+            if (pageTitle) {
+                pageTitle.textContent = isSpanish ? 'Página Principal' : 'Main Page';
+            }
+
+            const mainHeading = document.querySelector('h1.display-4');
+            if (mainHeading) {
+                mainHeading.textContent = isSpanish ? 'Bienvenido a la Página de Gestión' : 'Welcome to the Management Page';
+            }
+
+            const mainSubHeading = document.querySelector('p.lead');
+            if (mainSubHeading) {
+                mainSubHeading.textContent = isSpanish ? 'Organiza tus tareas y eventos de manera eficiente.' : 'Organize your tasks and events efficiently.';
+            }
+
+            // Menú de navegación
+            const menuItems = [
+                { id: 'menuMaquinas', es: 'Gestión de Máquinas', en: 'Machine Management' },
+                { id: 'menuAverias', es: 'Gestión de Averías', en: 'Failure Management' },
+                { id: 'menuTareas', es: 'Gestión de Tareas', en: 'Task Management' },
+                { id: 'menuUsuarios', es: 'Gestión de Usuarios', en: 'User Management' },
+                { id: 'menuSeguridad', es: 'Gestión de Seguridad', en: 'Security Management' },
+            ];
+
+            menuItems.forEach(item => {
+                const element = document.getElementById(item.id);
+                if (element) {
+                    element.textContent = isSpanish ? item.es : item.en;
+                }
+            });
+
+            // Footer
+            const footerText = document.querySelector('footer p');
+            if (footerText) {
+                footerText.textContent = isSpanish ? 'Gestión de Tareas © 2025' : 'Task Management © 2025';
+            }
+
+            // Botón de idioma
+            const languageToggle = document.getElementById('languageToggle');
+            if (languageToggle) {
+                languageToggle.textContent = isSpanish ? 'English' : 'Español';
+            }
+
+            // Traducción del Aside
+            document.getElementById('label-nombre').textContent = isSpanish ? 'Nombre:' : 'Name:';
+            document.getElementById('label-username').textContent = isSpanish ? 'Nombre de usuario:' : 'Username:';
+            document.getElementById('label-email').textContent = isSpanish ? 'Email:' : 'Email:';
+            
+            // Traducción del título de tareas
+            document.getElementById('tasks-title').textContent = isSpanish ? 'Lista de Tareas' : 'Task List';
+
+            // Traducción de las tareas
+            document.getElementById('task-easy').textContent = isSpanish ? 'Tarea Fácil' : 'Easy Task';
+            document.getElementById('details-easy').textContent = isSpanish ? 'Detalles o pasos para completar esta tarea.' : 'Details or steps to complete this task.';
+            
+            document.getElementById('task-medium').textContent = isSpanish ? 'Tarea Moderada' : 'Moderate Task';
+            document.getElementById('details-medium').textContent = isSpanish ? 'Detalles o pasos para completar esta tarea.' : 'Details or steps to complete this task.';
+            
+            document.getElementById('task-hard').textContent = isSpanish ? 'Tarea Difícil' : 'Hard Task';
+            document.getElementById('details-hard').textContent = isSpanish ? 'Detalles o pasos para completar esta tarea.' : 'Details or steps to complete this task.';
+        }
+    </script>
+    <script src="scripts.js">
+        </script>
 </body>
 </html>
