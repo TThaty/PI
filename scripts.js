@@ -185,8 +185,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (document.getElementById("listaMaquinas")) renderizarMaquinas();
     if (document.getElementById("listaUsuarios")) renderizarUsuarios();
     if (document.getElementById("listaUsuariosGestionSeguridad")) renderizarUsuariosGestionSeguridad();
-    if (document.getElementById("listaAverias")) renderizarAverias();
-    if (document.getElementById("listaTareas")) renderizarTareas();
+    if (document.getElementById("listaAverias")) renderizarAveriasEng(); // Modificada -------------------------------------------------------------------------
+    if (document.getElementById("listaTareas")) renderizarTareasEng(); // Modificada -----------------------------------------------------------------------
     if (document.getElementById("calendar-title")) renderCalendar();
     
     verificarSesion();
@@ -1343,13 +1343,13 @@ function renderizarAveriasEng() {
         const detalles = document.createElement("div");
         detalles.className = "detalleAveria";
         detalles.innerHTML = `
-            <h3>Detalle de la Avería</h3>
-            <p><strong>Máquina:</strong> ${averia.maquina}</p>
-            <p><strong>Descripción:</strong> ${averia.descripcion}</p>
-            <p><strong>Acciones sugeridas:</strong> ${averia.acciones}</p>
-            <p><strong>Estado:</strong> ${averia.resuelta ? "Arreglada" : "Pendiente"}</p>
+            <h3>Breakdown details</h3>
+            <p><strong>Machine:</strong> ${averia.maquina}</p>
+            <p><strong>Description:</strong> ${averia.descripcion}</p>
+            <p><strong>Suggested actions:</strong> ${averia.acciones}</p>
+            <p><strong>State:</strong> ${averia.resuelta ? "Arreglada" : "Pendiente"}</p>
             <button onclick="alternarEstadoAveria(${averia.id})">
-                ${averia.resuelta ? "Marcar como no corregida" : "Marcar como corregida"}
+                ${averia.resuelta ? "Mark as uncorrected" : "Mark as corrected"}
             </button>
         `;
 
@@ -1358,7 +1358,7 @@ function renderizarAveriasEng() {
                 <strong><a href="maquinas.html" ('${averia.maquina}')">${averia.maquina}</a></strong> - 
                 <a href="#" onclick="verDetalle(${averia.id}, this)">${averia.descripcion}</a>
             </div>
-            <span>${averia.resuelta ? "Corregida" : "Sin corregir"}</span>
+            <span>${averia.resuelta ? "Corrected" : "Uncorrected"}</span>
         `;
 
         listItem.appendChild(detalles);
@@ -1381,7 +1381,7 @@ function alternarEstadoAveria(id) {
     localStorage.setItem("averias", JSON.stringify(averias));
 
     // Volver a renderizar la lista
-    renderizarAverias();
+    renderizarAveriasEng(); // Modificada --------------------------------------------------------------------------------------------------------------------------
 }
 
 function irAMaquina(maquina) {
@@ -1425,7 +1425,7 @@ function agregarAveria() {
     localStorage.setItem("averias", JSON.stringify(averias));
 
     // Renderizar lista actualizada
-    renderizarAverias();
+    renderizarAveriasEng(); // Modificada ----------------------------------------------------------------------------------------------
 
     // Cerrar el modal y mostrar mensaje de éxito
     cerrarModal();
@@ -1480,6 +1480,40 @@ function renderizarTareas() {
                 (Asignado a: ${tarea.usuario})
             </div>
             <span>Estado: ${tarea.estado.charAt(0).toUpperCase() + tarea.estado.slice(1)}</span>
+        `;
+
+        listaTareas.appendChild(listItem);
+    });
+
+}
+
+function renderizarTareasEng() {
+    const listaTareas = document.getElementById("listaTareas");
+
+    if (!listaTareas) {
+        console.error("No se encontró el elemento con id 'listaTareas'");
+        return;
+    }
+
+    let tareas = JSON.parse(localStorage.getItem("tareas")) || [];
+
+    listaTareas.innerHTML = "";
+
+    if (tareas.length === 0) {
+        listaTareas.innerHTML = "<p>No hay tareas disponibles.</p>";
+        return;
+    }
+
+    tareas.forEach(tarea => {
+        const listItem = document.createElement("li");
+        listItem.className = tarea.estado;
+
+        listItem.innerHTML = `
+            <div>
+                <strong><a href="tareaEng.html?id=${tarea.id}">${tarea.nombre}</a></strong> 
+                (Assigned to: ${tarea.usuario})
+            </div>
+            <span>State: ${tarea.estado.charAt(0).toUpperCase() + tarea.estado.slice(1)}</span>
         `;
 
         listaTareas.appendChild(listItem);
