@@ -1196,12 +1196,12 @@ function mostrarMenu() {
     const menuHTML = `
         <nav class="d-flex justify-content-center">
             <ul class="nav">
-                <a href="pagina-principal.html" target="_self">Página principal</a>
-                <a href="maquinas.html" target="_self">Gestión de Máquinas</a>
-                <a href="averias.html" target="_self">Gestión de Averías</a>
-                <a href="tareas.html" target="_self">Gestión de Tareas</a>
-                <a href="usuarios.html" target="_self">Gestión de Usuarios</a>
-                <a href="seguridad.html" target="_self">Gestión de Seguridad</a>
+                <a href="pagina-principal.html" target="_self">Main page</a>
+                <a href="maquinas.html" target="_self">Machine management</a>
+                <a href="averiasEng.html" target="_self">Breakdown management</a>
+                <a href="tareasEng.html" target="_self">Tasks management</a>
+                <a href="usuarios.html" target="_self">Users management</a>
+                <a href="seguridad.html" target="_self">Security management</a>
                 <div class="dropdown ms-auto">
                     <button class="btn btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="img/log-out.png" alt="Cerrar sesión" style="width: 30px; height: 30px; filter: invert(1);">
@@ -1291,6 +1291,44 @@ function abrirModalCambioContrasena() {
 }
 
 function renderizarAverias() {
+    const listaAverias = document.getElementById("listaAverias");
+
+    // Obtener averías desde localStorage o inicializar con un array vacío
+    let averias = JSON.parse(localStorage.getItem("averias")) || [];
+
+    listaAverias.innerHTML = ""; // Limpiar la lista antes de renderizar
+
+    averias.forEach(averia => {
+        const listItem = document.createElement("li");
+        listItem.className = averia.resuelta ? "resolved" : "";
+
+        const detalles = document.createElement("div");
+        detalles.className = "detalleAveria";
+        detalles.innerHTML = `
+            <h3>Detalle de la Avería</h3>
+            <p><strong>Máquina:</strong> ${averia.maquina}</p>
+            <p><strong>Descripción:</strong> ${averia.descripcion}</p>
+            <p><strong>Acciones sugeridas:</strong> ${averia.acciones}</p>
+            <p><strong>Estado:</strong> ${averia.resuelta ? "Arreglada" : "Pendiente"}</p>
+            <button onclick="alternarEstadoAveria(${averia.id})">
+                ${averia.resuelta ? "Marcar como no corregida" : "Marcar como corregida"}
+            </button>
+        `;
+
+        listItem.innerHTML = `
+            <div>
+                <strong><a href="maquinas.html" ('${averia.maquina}')">${averia.maquina}</a></strong> - 
+                <a href="#" onclick="verDetalle(${averia.id}, this)">${averia.descripcion}</a>
+            </div>
+            <span>${averia.resuelta ? "Corregida" : "Sin corregir"}</span>
+        `;
+
+        listItem.appendChild(detalles);
+        listaAverias.appendChild(listItem);
+    });
+}
+
+function renderizarAveriasEng() {
     const listaAverias = document.getElementById("listaAverias");
 
     // Obtener averías desde localStorage o inicializar con un array vacío
