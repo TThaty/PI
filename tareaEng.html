@@ -117,13 +117,13 @@
             if (!cambiarEstadoButton) return;
 
             if (tarea.estado === "pendiente") {
-                cambiarEstadoButton.textContent = "Marcar como en curso";
+                cambiarEstadoButton.textContent = "Task in progress";
                 cambiarEstadoButton.onclick = () => cambiarEstado();
             } else if (tarea.estado === "en curso") {
-                cambiarEstadoButton.textContent = "Marcar como realizada";
+                cambiarEstadoButton.textContent = "Task completed";
                 cambiarEstadoButton.onclick = () => cambiarEstado();
             } else if (tarea.estado === "realizada") {
-                cambiarEstadoButton.textContent = "Marcar como pendiente";
+                cambiarEstadoButton.textContent = "pending tasks";
                 cambiarEstadoButton.onclick = () => cambiarEstado();
             }
         }

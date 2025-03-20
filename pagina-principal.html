@@ -29,12 +29,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="averias.html" target="_self" id="menuAverias" role="button" aria-expanded="false">
+                        <a class="nav-link text-white" href="averiasEng.html" target="_self" id="menuAverias" role="button" aria-expanded="false">
                             Gestión de Averías
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="tareas.html"  target="_self" id="menuTareas" role="button" aria-expanded="false">
+                        <a class="nav-link text-white" href="tareasEng.html3"  target="_self" id="menuTareas" role="button" aria-expanded="false">
                             Gestión de Tareas
                         </a>
                     </li>
@@ -53,8 +53,8 @@
                         <img src="img/log-out.png" alt="Cerrar sesión" style="width: 30px; height: 30px; filter: invert(1);">
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#" onclick="abrirModalCambioContrasena()">Cambiar Contraseña</a></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="abrirModalCambioContrasena()">Change password</a></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="cerrarSesion()">Log out</a></li>
                     </ul>
                 </div>
                 <button id="languageToggle" class="btn">English</button>
@@ -205,7 +205,7 @@
         // Configurar el botón de cambio de idioma
         function setupLanguageToggle() {
             const languageToggle = document.getElementById('languageToggle');
-            languageToggle.textContent = isSpanish ? 'English' : 'Español';
+            languageToggle.textContent = isSpanish ? 'English' : 'Spanish';
             languageToggle.addEventListener('click', () => {
                 isSpanish = !isSpanish;
                 localStorage.setItem('language', isSpanish ? 'es' : 'en');
@@ -256,7 +256,7 @@
             // Botón de idioma
             const languageToggle = document.getElementById('languageToggle');
             if (languageToggle) {
-                languageToggle.textContent = isSpanish ? 'English' : 'Español';
+                languageToggle.textContent = isSpanish ? 'English' : 'Spanish';
             }
 
             // Traducción del Aside

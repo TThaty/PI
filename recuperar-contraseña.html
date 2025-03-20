@@ -12,34 +12,35 @@
 </head>
 <body>
   <header>
-    <h1>Gestión de Maquinaria</h1>
+    <h1>Machinery and Maintenance Management</h1>
+    <button id="languageToggle" class="btn">English</button>
   </header>
 
   <main class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
     <div class="card p-4 shadow" style="width: 400px;">
-      <h2 class="text-center mb-4">Recuperar Contraseña</h2>
+      <h2 class="text-center mb-4">Recover password</h2>
       <!-- Contenedor para mostrar alertas dentro de la tarjeta -->
       <div id="alertRecovery" class="alert d-none" role="alert"></div>
       
       <form id="recoveryForm" onsubmit="handleRecovery(event)">
         <div class="mb-3">
-          <label for="username" class="form-label">Nombre de usuario</label>
-          <input type="text" class="form-control" id="username" placeholder="Usuario" required>
+          <label for="username" class="form-label">Username</label>
+          <input type="text" class="form-control" id="username" placeholder="Username" required>
         </div>
         <div class="mb-3">
-          <label for="newPassword" class="form-label">Nueva Contraseña</label>
-          <input type="password" class="form-control" id="newPassword" placeholder="Nueva contraseña" required>
-          <small class="text-muted">Mínimo 4 caracteres, al menos una letra y un número.</small>
+          <label for="newPassword" class="form-label">New password</label>
+          <input type="password" class="form-control" id="newPassword" placeholder="New password" required>
+          <small class="text-muted">Minimum 4 characters, at least one letter and one number</small>
         </div>
         <div class="mb-3">
-          <label for="confirmPassword" class="form-label">Confirmar Nueva Contraseña</label>
-          <input type="password" class="form-control" id="confirmPassword" placeholder="Confirmar contraseña" required>
+          <label for="confirmPassword" class="form-label">Confirm new password</label>
+          <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm password" required>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Recuperar Contraseña</button>
+        <button type="submit" class="btn btn-primary w-100">Recover password</button>
       </form>
       
       <div class="mt-3 text-center">
-        <a href="login.html" class="text-decoration-none">Volver al inicio de sesión</a>
+        <a href="login.html" class="text-decoration-none">Back to login</a>
       </div>
     </div>
   </main>

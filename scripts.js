@@ -847,7 +847,7 @@ function renderizarMaquinas() {
             averiada: "Broken",
             mostrarImagen: "Show Image",
             editarDetalles: "Edit Details",
-            darDeBaja: "Deactivate"
+            darDeBaja: "Unregister"
         }
     };
 
@@ -1207,8 +1207,8 @@ function mostrarMenu() {
                         <img src="img/log-out.png" alt="Cerrar sesión" style="width: 30px; height: 30px; filter: invert(1);">
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#" onclick="abrirModalCambioContrasena()">Cambiar Contraseña</a></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="abrirModalCambioContrasena()">Change password</a></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="cerrarSesion()">Log out</a></li>
                     </ul>
                 </div>
             </ul>
