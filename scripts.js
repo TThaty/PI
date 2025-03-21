@@ -691,9 +691,10 @@ function handleRecovery(event) {
             break;
         }
     }
+    //The password for user "${username}" has been successfully updated.
     if (usuarioEncontrado) {
         localStorage.setItem("usuarios", JSON.stringify(usuariosLS));
-        mostrarAlertRecovery(`La contraseña del usuario "${username}" se ha actualizado correctamente.`, "success");
+        mostrarAlertRecovery(`The password for user "${username}" has been successfully updated.`, "success");
         setTimeout(() => { window.location.href = "login.html"; }, 2000);
     } else {
         mostrarAlertRecovery("El nombre de usuario no existe. Por favor, inténtalo de nuevo.", "danger");
@@ -893,7 +894,7 @@ function mostrarImagen(id, imagenBase64) {
     let maquina = maquinas.find(m => m.id === id);
 
     if (!maquina || !maquina.imagen) {
-        alert("No hay imagen disponible para esta máquina.");
+        alert("No image available for this machine.");
         return;
     }
 
@@ -916,7 +917,7 @@ function borrarImagen() {
     if (index !== -1) {
         maquinas[index].imagen = ""; // Eliminar la imagen
         localStorage.setItem("maquinas", JSON.stringify(maquinas)); // Guardar cambios en localStorage
-        alert("Imagen eliminada correctamente.");
+        alert("Image successfully deleted.");
     }
 
     maquinaSeleccionada = null; // Resetear variable
