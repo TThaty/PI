@@ -29,7 +29,7 @@ const usuarios = [
         nombre: "Juan Pérez", 
         username: "juanpe", 
         password: "1234", 
-        rol: "Administrador",
+        rol: "Administrator",
         permisos: {
             permisoAñadirMaquinas: true,
             permisoModificarMaquinas: true,
@@ -51,7 +51,7 @@ const usuarios = [
         nombre: "Ana López", 
         username: "analopez", 
         password: "1234", 
-        rol: "Operario",
+        rol: "Operator",
         permisos: {
             permisoAñadirMaquinas: false,
             permisoModificarMaquinas: false,
@@ -73,7 +73,7 @@ const usuarios = [
         nombre: "Luis García", 
         username: "luisgarcia", 
         password: "1234", 
-        rol: "Mecánico",
+        rol: "Mechanic",
         permisos: {
             permisoAñadirMaquinas: false,
             permisoModificarMaquinas: false,
@@ -296,10 +296,10 @@ function renderizarUsuarios() {
                 <strong>${usuario.nombre}</strong>
             </div>
             <div class="usuario-detalles" id="detalles-${usuario.id}">
-                <button class="btn btn-primary" onclick="abrirFormularioVacaciones('${usuario.nombre}')">Establecer Vacaciones</button>
-                <button type="button" class="btn btn-primary" onclick="abrirFormularioHorarios('${usuario.nombre}')">Asignar Horarios</button>
-                <button type="button" class="btn btn-primary" onclick="consultarHorariosYVacaciones('${usuario.nombre}')">Consultar Horario y Vacaciones</button>
-                <button id="botonBaja" class="btn btn-danger" onclick="darBajaUsuario('${usuario.nombre}')">Dar de Baja</button>
+                <button class="btn btn-primary" onclick="abrirFormularioVacaciones('${usuario.nombre}')">Set vacations</button>
+                <button type="button" class="btn btn-primary" onclick="abrirFormularioHorarios('${usuario.nombre}')">Assign schedules</button>
+                <button type="button" class="btn btn-primary" onclick="consultarHorariosYVacaciones('${usuario.nombre}')">Check schedule and vacations</button>
+                <button id="botonBaja" class="btn btn-danger" onclick="darBajaUsuario('${usuario.nombre}')">Unregister</button>
             </div>
         `;
         lista.appendChild(li);
@@ -318,10 +318,10 @@ function renderizarUsuariosGestionSeguridad() {
                 <span class="rol">${usuario.rol}</span>
             </div>
             <div class="usuario-detalles" id="detalles-${usuario.id}">
-                <button class="btn btn-primary" onclick="abrirFormularioRol('${usuario.nombre}')">Cambiar Rol</button>
-                <button class="btn btn-primary" onclick="abrirModalPermisosUsuario('${usuario.nombre}')">Modificar Permisos</button>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCambioContrasena" onclick="cambiarContrasenaDelUsuarioSeleccionado()">Cambiar Contraseña</button>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalForzarCambio">Obligar Cambio</button>
+                <button class="btn btn-primary" onclick="abrirFormularioRol('${usuario.nombre}')">Change Rol</button>
+                <button class="btn btn-primary" onclick="abrirModalPermisosUsuario('${usuario.nombre}')">Modify permissions</button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCambioContrasena" onclick="cambiarContrasenaDelUsuarioSeleccionado()">Change password</button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalForzarCambio">Force change</button>
             </div>
         `;
         lista.appendChild(li);
@@ -363,9 +363,9 @@ function abrirFormularioRol(usuario) {
             <div class="mb-3">
                 <label for="rol" class="form-label">Rol:</label>
                 <select id="rol" class="form-select">
-                    <option value="Administrador">Administrador</option>
-                    <option value="Operario">Operario</option>
-                    <option value="Mecánico">Mecánico</option>
+                    <option value="Administrator">Administrator</option>
+                    <option value="Operator">Operator</option>
+                    <option value="Mechanic">Mechanic</option>
                 </select>
             </div>
             <button type="button" class="btn btn-primary" onclick="asignarRol('${usuario}')">Guardar</button>
@@ -396,7 +396,7 @@ function abrirModalPermisosUsuario(nombreUsuario) {
         return;
     }
     let permisosHTML = "";
-    if (usuario.rol === "Operario") {
+    if (usuario.rol === "Operator") {
         permisosHTML += '<h6>Selecciona las máquinas a las que tendrá acceso:</h6>';
         let maquinasLS = JSON.parse(localStorage.getItem("maquinas")) || [];
         maquinasLS.forEach(maquina => {
@@ -437,7 +437,7 @@ function guardarPermisosUsuario() {
         alert("Error: Usuario no encontrado.");
         return;
     }
-    if (usuario.rol === "Operario") {
+    if (usuario.rol === "Operator") {
         let accesosMaquinas = [];
         let maquinasLS = JSON.parse(localStorage.getItem("maquinas")) || [];
         maquinasLS.forEach(maquina => {
@@ -735,9 +735,9 @@ function abrirFormularioAltaUsuario() {
             <div class="mb-3">
                 <label for="rolAlta" class="form-label">Rol:</label>
                 <select id="rolAlta" class="form-select">
-                    <option value="Administrador">Administrador</option>
-                    <option value="Operario">Operario</option>
-                    <option value="Mecánico">Mecánico</option>
+                    <option value="Administrator">Administrator</option>
+                    <option value="Operator">Operator</option>
+                    <option value="Mechanic">Mechanic</option>
                 </select>
             </div>
 
@@ -1610,7 +1610,7 @@ function abrirModalPermisosUsuario(nombreUsuario) {
 
     let permisosHTML = "";
     
-    if (usuario.rol === "Operario") {
+    if (usuario.rol === "Operator") {
         // Primero se muestran los checkbox de las máquinas
         permisosHTML += '<h6>Selecciona las máquinas a las que tendrá acceso:</h6>';
         let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
@@ -1662,8 +1662,8 @@ function guardarPermisosUsuario() {
         return;
     }
 
-    // Si el usuario es Operario, leeremos los accesos a máquinas y el checkbox de notificar avería
-    if (usuario.rol === "Operario") {
+    // Si el usuario es Operator, leeremos los accesos a máquinas y el checkbox de notificar avería
+    if (usuario.rol === "Operator") {
         let accesosMaquinas = [];
         let maquinas = JSON.parse(localStorage.getItem("maquinas")) || [];
         maquinas.forEach(maquina => {
@@ -1698,9 +1698,9 @@ function guardarPermisosUsuario() {
 function actualizarPermisos() {
     const rol = document.getElementById("nuevoRol").value;
     const permisos = {
-        mecanico: ["permisoAñadirAverias", "permisoModificarAverias", "permisoBorrarAverias", "permisoMarcarAveriaResuelta"],
-        operario: ["permisoAñadirTareas", "permisoModificarTareas", "permisoBorrarTareas"],
-        administrador: [
+        mechanic: ["permisoAñadirAverias", "permisoModificarAverias", "permisoBorrarAverias", "permisoMarcarAveriaResuelta"],
+        operator: ["permisoAñadirTareas", "permisoModificarTareas", "permisoBorrarTareas"],
+        administrator: [
             "permisoAñadirMaquinas", "permisoModificarMaquinas", "permisoBorrarMaquinas",
             "permisoAñadirAverias", "permisoModificarAverias", "permisoBorrarAverias", "permisoMarcarAveriaResuelta",
             "permisoAñadirTareas", "permisoModificarTareas", "permisoBorrarTareas",
